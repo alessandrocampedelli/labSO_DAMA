@@ -11,6 +11,7 @@ public class ClientHandler extends Thread {
     private Topic currentTopic;
 
     public ClientHandler(Socket socket) {
+        this.clientSocket = socket;
     }
 
     @Override
