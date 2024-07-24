@@ -6,7 +6,9 @@ import java.net.Socket;
 
 public class ClientHandler extends Thread {
     private final Socket clientSocket;
+    //inviare messaggi al client
     private PrintWriter out;
+    //leggere messaggi dal client
     private BufferedReader in;
     private Topic currentTopic;
 
@@ -21,8 +23,10 @@ public class ClientHandler extends Thread {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             String inputLine;
+            //leggo le linee di input dal client finchè non riceve una linea nulla
             while ((inputLine = in.readLine()) != null) {
                 // Gestione dei comandi del client
+                //TODO: in questo momento non c'è differenza tra publisher e subscriber (il subscriber può fare send)
                 if (inputLine.startsWith("publish ")) {
                     String topicName = inputLine.split(" ")[1];
                     currentTopic = Server.getOrCreateTopic(topicName);
@@ -37,12 +41,14 @@ public class ClientHandler extends Thread {
                 } else if (inputLine.startsWith("send ")) {
                     String messageText = inputLine.substring(5);
                     Message message = new Message(messageText);
+                    //caso in cui manda un messaggio senza specificare il topic
                     if (currentTopic != null) {
                         currentTopic.addMessage(message);
                         out.println("Messaggio inviato.");
                     } else {
                         out.println("Devi prima pubblicare su un topic.");
                     }
+                    //TODO: list non va bene perchè stampa tutti i messaggi come listall e non solo quelli mandati da quel publisher
                 } else if (inputLine.equals("list")) {
                     if (currentTopic != null) {
                         out.println("Messaggi:");
