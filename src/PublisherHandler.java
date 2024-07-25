@@ -65,7 +65,7 @@ public class PublisherHandler extends Thread {
                 }
                 else
                 {
-                    out.println("Comando sconosciuto.");
+                    out.println("Comando sconosciuto!.");
                 }
             }
         } catch (IOException e) {
