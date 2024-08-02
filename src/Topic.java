@@ -4,7 +4,7 @@ import java.util.List;
 public class Topic {
     private final String name;
     private final List<Message> messages = new ArrayList<>();
-    private final List<ClientHandler> subscribers = new ArrayList<>();
+    private final List<Subscriber> subscribers = new ArrayList<>();
 
     public Topic(String name) {
         this.name = name;
@@ -26,13 +26,13 @@ public class Topic {
     }
 
     // Aggiunge un subscriber alla lista dei subscriber
-    public synchronized void subscribe(ClientHandler client) {
+    public synchronized void subscribe(Subscriber client) {
         subscribers.add(client);
     }
 
     // Notifica tutti i subscriber con un nuovo messaggio
     private void notifySubscribers(Message message) {
-        for (ClientHandler client : subscribers) {
+        for (Subscriber client : subscribers) {
             client.sendMessage(message);
         }
     }
