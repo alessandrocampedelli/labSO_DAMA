@@ -23,10 +23,12 @@ public class ClientHandler extends Thread {
                 client = new Publisher(clientSocket);
                 client.registerOutputAndInput();
                 client.handleCommand(inputLine);
+
             } else if (inputLine.startsWith("subscribe ")) {
                 client = new Subscriber(clientSocket);
                 client.registerOutputAndInput();
                 client.handleCommand(inputLine);
+
             } else {
                 out.println("Devi prima registrarti come publisher o subscriber.");
                 clientSocket.close();
