@@ -34,9 +34,11 @@ public class Client {
                 //invio messaggio al server
                 out.println(userInput);
                 String response;
+
                 //ciclo for per leggere la risposta del server.
                 while ((response = in.readLine()) != null) {
                     System.out.println(response);
+
                     //il ciclo si interrompe quando non ci sono più dati pronti per essere letti
                     if (!in.ready()) {
                         break;

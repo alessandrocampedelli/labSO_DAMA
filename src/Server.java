@@ -6,7 +6,7 @@ import java.util.List;
 import java.io.PrintWriter;
 
 public class Server {
-    private static final List<Topic> topics = new ArrayList<>();
+    public static final List<Topic> topics = new ArrayList<>();
     private static final int DEFAULT_PORT = 9000; // Porta predefinita
 
     public static void main(String[] args) {
@@ -19,17 +19,29 @@ public class Server {
         int port = DEFAULT_PORT; // Usa la porta predefinita
         List<Socket> listClientSocket = new ArrayList<>();
 
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server in ascolto sulla porta " + port);
 
             //gestisco contemporaneamente la console del server all'attesa di nuovi client
             new ServerHandler(serverSocket,listClientSocket).start();
 
             // Accetta connessioni dei client in un ciclo infinito
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                listClientSocket.add(clientSocket);
-                new ClientHandler(clientSocket).start();
+            while (!serverSocket.isClosed()) {
+                try {
+                    Socket clientSocket = serverSocket.accept();
+
+                    new ClientHandler(clientSocket, listClientSocket).start();
+
+                    synchronized (listClientSocket) {
+                        listClientSocket.add(clientSocket);
+                    }
+                }catch (IOException e) { //quando chiudo il server l'accept non riesce più ad eseguire in quanto la serversocket è ststa chiusa
+                    if (!serverSocket.isClosed()) {
+                        System.err.println("Errore durante l'accettazione della connessione: " + e.getMessage());
+                    }
+                    break;
+                }
 
             }
         } catch (IOException e) {
