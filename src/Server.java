@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 public class Server {
     public static final List<Topic> topics = new ArrayList<>();
     private static final int DEFAULT_PORT = 9000; // Porta predefinita
+    public static volatile boolean flag_sessione_interattiva = false;
 
     public static void main(String[] args) {
         /*//per inserire manualmente la porta

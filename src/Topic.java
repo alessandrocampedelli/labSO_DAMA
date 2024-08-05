@@ -20,6 +20,7 @@ public class Topic {
         notifySubscribers(message);
     }
 
+
     // Restituisce tutti i messaggi del topic
     public synchronized List<Message> getMessages() {
         return new ArrayList<>(messages);

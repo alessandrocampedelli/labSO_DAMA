@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ServerHandler extends Thread {
@@ -31,6 +30,7 @@ public class ServerHandler extends Thread {
                         }
                     }
                 } else if (userInput.startsWith("inspect")) {
+                    sessioneInterattiva();
 
                 } else if (userInput.startsWith("num client")) {
                     synchronized (listClientSocket) {
@@ -71,4 +71,21 @@ public class ServerHandler extends Thread {
         System.out.println("Numero client scollegati: " + numDisconnected);
         System.out.println("Server scollegato...");
     }
+    private void sessioneInterattiva() throws IOException {
+        BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+        Server.flag_sessione_interattiva = true;
+        System.out.println("Flag sessione interattiva: " + Server.flag_sessione_interattiva);
+        while (Server.flag_sessione_interattiva) {
+            String s = stdIn.readLine();
+            if (s.startsWith("listall")) {
+
+            } else if (s.startsWith("delete")) {
+
+            } else if (s.startsWith("end")) {
+                Server.flag_sessione_interattiva = false;
+                System.out.println("Flag sessione interattiva: " + Server.flag_sessione_interattiva);
+            }
+        }
+    }
+
 }

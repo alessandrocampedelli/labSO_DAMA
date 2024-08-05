@@ -23,35 +23,43 @@ public class ClientHandler extends Thread {
         try {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String inputLine = in.readLine();
-                if (inputLine.startsWith("publish ")) {
-                    client = new Publisher(clientSocket);
-                    client.registerOutputAndInput();
-                    client.handleCommand(inputLine);
+            String inputLine = in.readLine();
 
-                } else if (inputLine.startsWith("subscribe ")) {
-                    client = new Subscriber(clientSocket);
-                    client.registerOutputAndInput();
-                    client.handleCommand(inputLine);
+                    if (inputLine.startsWith("publish ")) {
+                        client = new Publisher(clientSocket);
+                        client.registerOutputAndInput();
+                        client.handleCommand(inputLine);
 
-                } else {
-                    out.println("Devi prima registrarti come publisher o subscriber.");
-                    stopClient(); // Utilizza il metodo per fermare il client
-                    return;
-                }
+                    } else if (inputLine.startsWith("subscribe ")) {
+                        client = new Subscriber(clientSocket);
+                        client.registerOutputAndInput();
+                        client.handleCommand(inputLine);
 
-                // Ciclo per gestire ulteriori comandi
-                while (running && (inputLine = in.readLine()) != null) {
-                    client.handleCommand(inputLine);
-                    if (inputLine.equals("quit")) {
-                        break;
+                    } else {
+                        out.println("Devi prima registrarti come publisher o subscriber.");
+                        stopClient(); // Utilizza il metodo per fermare il client
+                        return;
                     }
+
+
+            // Ciclo per gestire ulteriori comandi
+            while (running && (inputLine = in.readLine()) != null) {
+                if (!Server.flag_sessione_interattiva) {
+                    client.handleCommand(inputLine);
                 }
+                if (inputLine.equals("quit")) {
+                    System.out.println("Received quit command, breaking the loop.");
+                    break;
+                }
+
+            }
+
+
         } catch (SocketException e) { //quando faccio quit il buffer genera un eccezione in quanto la socket è ststa chiusa
             System.err.println("SocketException: " + e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
+        }  finally {
             stopClient(); // Chiude il socket e rimuove il client dalla lista
         }
     }
