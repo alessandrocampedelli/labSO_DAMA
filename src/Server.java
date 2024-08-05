@@ -19,6 +19,7 @@ public class Server {
         int port = DEFAULT_PORT; // Usa la porta predefinita
         List<Socket> listClientSocket = new ArrayList<>();
 
+        
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server in ascolto sulla porta " + port);
