@@ -52,6 +52,15 @@ public class ClientHandler extends Thread {
                 if (!client.getTopic().isInInspection()) {
                     client.handleCommand(inputLine);
                 }else {
+                    /*
+                     Il comando handleCommand dentro questo else è importantissimo, senza il metodo
+                     compare un "errore" con la console che non legge più le stringhe inviate, generando un loop infinito che ci permette soltanto di
+                     scrivere all'infinito senza risultati. Per evitare l'errore non bisogna per forza gestire inputLine ma basta che gestiamo una stringa.
+                     Comunque il lavoro che dovete fare è quello di passare un inputline o un vettore per salvare tutte le stringhe inviate,
+                     durante l'ispezione, al client così per poi eseguirle in un secondo momento quando l'ispezione del server sarà terminata.
+                     Ovviamente bignerà trovare un modo nelle sottoclassi di user per distinguere i due tipi di handleCommand, uno per salvare tutte le stringhe
+                     in attesa in un vettore per poi eseguirle in un secondo momento e l'altro per eseguire normalmente l'handleCommand delle stringhe non in attesa.
+                     */
                     client.handleCommand("inspect");    //quando il topic è in fase di ispezione dal server
                 }
                 if (inputLine.equals("quit")) {
