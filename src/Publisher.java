@@ -44,6 +44,8 @@ public class Publisher extends User
             Server.showTopics(out);
         } else if (inputLine.equals("quit")) {
             out.println("Disconnessione in corso...");
+        } else if (inputLine.equals("inspect")) {
+            out.println("il topic è in ispezione");
         } else {
             out.println("Comando sconosciuto.");
         }

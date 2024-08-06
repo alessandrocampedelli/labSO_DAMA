@@ -20,6 +20,9 @@ public abstract class User {
     public void sendMessage(Message message) {
         out.println("Nuovo messaggio sul topic " + currentTopic.getName() + ": " + message);
     }
+    public Topic getTopic(){
+        return this.currentTopic;
+    }
 
     protected void registerOutputAndInput() throws IOException {
         out = new PrintWriter(clientSocket.getOutputStream(), true);

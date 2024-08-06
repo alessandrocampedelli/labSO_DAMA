@@ -5,6 +5,7 @@ public class Topic {
     private final String name;
     private final List<Message> messages = new ArrayList<>();
     private final List<Subscriber> subscribers = new ArrayList<>();
+    private boolean inInspection = false; // Flag per indicare se il topic è in ispezione
 
     public Topic(String name) {
         this.name = name;
@@ -12,6 +13,13 @@ public class Topic {
 
     public String getName() {
         return name;
+    }
+    public boolean isInInspection() {
+        return inInspection;
+    }
+
+    public void setInInspection(boolean inInspection) {
+        this.inInspection = inInspection;
     }
 
     // Aggiunge un messaggio al topic e notifica tutti i subscriber

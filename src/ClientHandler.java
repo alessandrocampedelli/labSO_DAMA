@@ -1,17 +1,19 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class ClientHandler extends Thread {
     private final Socket clientSocket;
     private User client;
     private List<Socket> listClientSocket;
     private volatile boolean running = true; // Variabile per controllare il ciclo di esecuzione
+    private Scanner in;
+    private PrintStream out;
 
     public ClientHandler(Socket socket, List<Socket> listClientSocket) {
         this.clientSocket = socket;
@@ -21,45 +23,48 @@ public class ClientHandler extends Thread {
     @Override
     public void run() {
         try {
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine = in.readLine();
+            InputStream inputStream = clientSocket.getInputStream();
+            OutputStream outputStream = clientSocket.getOutputStream();
+            in = new Scanner(inputStream);
+            out = new PrintStream(outputStream, true);
 
-                    if (inputLine.startsWith("publish ")) {
-                        client = new Publisher(clientSocket);
-                        client.registerOutputAndInput();
-                        client.handleCommand(inputLine);
+            String inputLine = in.nextLine();
 
-                    } else if (inputLine.startsWith("subscribe ")) {
-                        client = new Subscriber(clientSocket);
-                        client.registerOutputAndInput();
-                        client.handleCommand(inputLine);
+            if (inputLine.startsWith("publish ")) {
+                client = new Publisher(clientSocket);
+                client.registerOutputAndInput();
+                client.handleCommand(inputLine);
 
-                    } else {
-                        out.println("Devi prima registrarti come publisher o subscriber.");
-                        stopClient(); // Utilizza il metodo per fermare il client
-                        return;
-                    }
+            } else if (inputLine.startsWith("subscribe ")) {
+                client = new Subscriber(clientSocket);
+                client.registerOutputAndInput();
+                client.handleCommand(inputLine);
 
-
-            // Ciclo per gestire ulteriori comandi
-            while (running && (inputLine = in.readLine()) != null) {
-                if (!Server.flag_sessione_interattiva) {
-                    client.handleCommand(inputLine);
-                }
-                if (inputLine.equals("quit")) {
-                    System.out.println("Received quit command, breaking the loop.");
-                    break;
-                }
-
+            } else {
+                out.println("Devi prima registrarti come publisher o subscriber.");
+                stopClient(); // Utilizza il metodo per fermare il client
+                return;
             }
 
+            // Ciclo per gestire ulteriori comandi
+            while (running && in.hasNextLine()) {
+                inputLine = in.nextLine();
+                if (!client.getTopic().isInInspection()) {
+                    client.handleCommand(inputLine);
+                }else {
+                    client.handleCommand("inspect");    //quando il topic è in fase di ispezione dal server
+                }
+                if (inputLine.equals("quit")) {
+                    System.out.println("Client disconnesso");
+                    break;
+                }
+            }
 
-        } catch (SocketException e) { //quando faccio quit il buffer genera un eccezione in quanto la socket è ststa chiusa
+        } catch (SocketException e) { //quando faccio quit il buffer genera un eccezione in quanto la socket è stata chiusa
             System.err.println("SocketException: " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }  finally {
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             stopClient(); // Chiude il socket e rimuove il client dalla lista
         }
     }

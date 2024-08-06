@@ -1,47 +1,48 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Scanner;
 
 public class ServerHandler extends Thread {
     private final ServerSocket serverSocket;
     private final List<Socket> listClientSocket;
+    private final Scanner stdIn;
 
     public ServerHandler(ServerSocket serverSocket, List<Socket> listClientSocket) {
         this.serverSocket = serverSocket;
         this.listClientSocket = listClientSocket;
+        this.stdIn = new Scanner(System.in);
     }
 
     @Override
     public void run() {
-        try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
+        try {
             String userInput;
-            while ((userInput = stdIn.readLine()) != null) {
+            while ((userInput = stdIn.nextLine()) != null) {
                 if (userInput.startsWith("quit")) {
                     stopServer();
                     break;
                 } else if (userInput.startsWith("show")) {
-                    System.out.println("Topics: ");
-                    synchronized (Server.topics) {
-                        for (Topic topic : Server.topics) {
-                            System.out.println("    - " + topic.getName());
-                        }
+                    showTopics();
+                } else if (userInput.startsWith("inspect ")) {
+                    String topicName = userInput.split(" ", 2)[1].trim();
+                    Topic topic = getTopicByName(topicName);
+                    if (topic == null) {
+                        System.out.println("Errore: Topic '" + topicName + "' non trovato.");
+                    } else {
+                        sessioneInterattiva(topic);
                     }
-                } else if (userInput.startsWith("inspect")) {
-                    sessioneInterattiva();
-
                 } else if (userInput.startsWith("num client")) {
-                    synchronized (listClientSocket) {
-                        System.out.println("Client connessi: " + listClientSocket.size());
-                    }
+                    showClientCount();
                 } else {
                     System.out.println("Comando non riconosciuto.");
                 }
             }
-        } catch (IOException e) {
-            System.err.println("Errore durante la lettura dell'input dalla console: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Errore durante l'esecuzione del server: " + e.getMessage());
+        } finally {
+            stdIn.close();
         }
     }
 
@@ -71,21 +72,55 @@ public class ServerHandler extends Thread {
         System.out.println("Numero client scollegati: " + numDisconnected);
         System.out.println("Server scollegato...");
     }
-    private void sessioneInterattiva() throws IOException {
-        BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-        Server.flag_sessione_interattiva = true;
-        System.out.println("Flag sessione interattiva: " + Server.flag_sessione_interattiva);
-        while (Server.flag_sessione_interattiva) {
-            String s = stdIn.readLine();
-            if (s.startsWith("listall")) {
 
-            } else if (s.startsWith("delete")) {
-
-            } else if (s.startsWith("end")) {
-                Server.flag_sessione_interattiva = false;
-                System.out.println("Flag sessione interattiva: " + Server.flag_sessione_interattiva);
+    private void showTopics() {
+        System.out.println("Topics: ");
+        synchronized (Server.topics) {
+            for (Topic topic : Server.topics) {
+                System.out.println("    - " + topic.getName());
             }
         }
     }
 
+    private Topic getTopicByName(String name) {
+        synchronized (Server.topics) {
+            for (Topic topic : Server.topics) {
+                if (topic.getName().equals(name)) {
+                    return topic;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void sessioneInterattiva(Topic topic) {
+        topic.setInInspection(true);
+        System.out.println("Sessione per il topic: " + topic.getName() + " iniziata");
+
+        try {
+            String userInput;
+            while ((userInput = stdIn.nextLine()) != null) {
+                if (userInput.startsWith("listall")) {
+                    // Implementa la logica per elencare tutti i messaggi nel topic
+                } else if (userInput.startsWith("delete ")) {
+                    String messageId = userInput.split(" ", 2)[1].trim();
+                    // Implementa la logica per eliminare il messaggio con l'ID specificato
+                } else if (userInput.startsWith("end")) {
+                    topic.setInInspection(false);
+                    System.out.println("Sessione topic chiusa");
+                    break;
+                } else {
+                    System.out.println("Comando non riconosciuto nella sessione interattiva.");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore durante la lettura dell'input nella sessione interattiva: " + e.getMessage());
+        }
+    }
+
+    private void showClientCount() {
+        synchronized (listClientSocket) {
+            System.out.println("Client connessi: " + listClientSocket.size());
+        }
+    }
 }
