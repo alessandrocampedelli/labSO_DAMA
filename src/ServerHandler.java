@@ -108,7 +108,7 @@ public class ServerHandler extends Thread {
                     } else {
                         System.out.println("Messaggi presenti all'interno del topic '" + topic.getName() + "':");
                         for (Message message : messages) {
-                            System.out.println(message.toString());
+                            System.out.println(message.toString()+"\n");
                         }
                     }
                 } else if (userInput.startsWith("delete ")) {
