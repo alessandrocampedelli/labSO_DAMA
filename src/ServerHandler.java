@@ -99,12 +99,39 @@ public class ServerHandler extends Thread {
 
         try {
             String userInput;
+            List<Message> messages = topic.getMessages();
             while ((userInput = stdIn.nextLine()) != null) {
                 if (userInput.startsWith("listall")) {
-                    // Implementa la logica per elencare tutti i messaggi nel topic
+
+                    if (messages.isEmpty()) {
+                        System.out.println("Nel topic non è presente alcun messaggio");
+                    } else {
+                        System.out.println("Messaggi nel topic '" + topic.getName() + "':");
+                        for (Message message : messages) {
+                            System.out.println(message.toString());
+                        }
+                    }
                 } else if (userInput.startsWith("delete ")) {
-                    String messageId = userInput.split(" ", 2)[1].trim();
-                    // Implementa la logica per eliminare il messaggio con l'ID specificato
+                    String messageIdStr = userInput.split(" ", 2)[1].trim();
+                    int messageId = Integer.parseInt(messageIdStr);
+                    boolean trovato = false;
+                    // Itera attraverso la lista dei messaggi
+                    for (int i = 0; i < messages.size(); i++) {
+                        Message message = messages.get(i);
+                        // Verifica se l'ID del messaggio corrisponde a quello specificato
+                        if (message.getId()==messageId) {
+                            messages.remove(i);
+                            trovato = true;
+                            break;
+                        }
+                    }
+
+                    if (trovato) {
+                        System.out.println("Messaggio con ID '" + messageId + "' eliminato.");
+                    } else {
+                        System.out.println("Errore: Messaggio con ID '" + messageId + "' non trovato.");
+                    }
+
                 } else if (userInput.startsWith("end")) {
                     topic.setInInspection(false);
                     System.out.println("Sessione topic chiusa");
