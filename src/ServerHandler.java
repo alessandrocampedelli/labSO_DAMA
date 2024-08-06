@@ -106,31 +106,18 @@ public class ServerHandler extends Thread {
                     if (messages.isEmpty()) {
                         System.out.println("Nel topic non è presente alcun messaggio");
                     } else {
-                        System.out.println("Messaggi nel topic '" + topic.getName() + "':");
+                        System.out.println("Messaggi presenti all'interno del topic '" + topic.getName() + "':");
                         for (Message message : messages) {
                             System.out.println(message.toString());
                         }
                     }
                 } else if (userInput.startsWith("delete ")) {
                     String messageIdStr = userInput.split(" ", 2)[1].trim();
+                    //Conversione dell'input utente in int
                     int messageId = Integer.parseInt(messageIdStr);
-                    boolean trovato = false;
-                    // Itera attraverso la lista dei messaggi
-                    for (int i = 0; i < messages.size(); i++) {
-                        Message message = messages.get(i);
-                        // Verifica se l'ID del messaggio corrisponde a quello specificato
-                        if (message.getId()==messageId) {
-                            messages.remove(i);
-                            trovato = true;
-                            break;
-                        }
-                    }
-
-                    if (trovato) {
-                        System.out.println("Messaggio con ID '" + messageId + "' eliminato.");
-                    } else {
-                        System.out.println("Errore: Messaggio con ID '" + messageId + "' non trovato.");
-                    }
+                    //richiamo al metodo di eliminazione del messaggio tramite id nella classe Topic
+                    topic.deleteMessage(messageId);
+                    //mancano i controlli di esistenza o meno del messageid, da fare o qua o nella classe topic direttamente nel metodo
 
                 } else if (userInput.startsWith("end")) {
                     topic.setInInspection(false);
