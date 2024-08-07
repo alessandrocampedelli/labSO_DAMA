@@ -99,25 +99,37 @@ public class ServerHandler extends Thread {
 
         try {
             String userInput;
-            List<Message> messages = topic.getMessages();
             while ((userInput = stdIn.nextLine()) != null) {
                 if (userInput.startsWith("listall")) {
 
-                    if (messages.isEmpty()) {
+                    if (topic.getMessages().isEmpty()) {
                         System.out.println("Nel topic non è presente alcun messaggio");
                     } else {
                         System.out.println("Messaggi presenti all'interno del topic '" + topic.getName() + "':");
-                        for (Message message : messages) {
+                        for (Message message : topic.getMessages()) {
                             System.out.println(message.toString()+"\n");
                         }
                     }
                 } else if (userInput.startsWith("delete ")) {
+                    boolean trovato=false;
                     String messageIdStr = userInput.split(" ", 2)[1].trim();
                     //Conversione dell'input utente in int
                     int messageId = Integer.parseInt(messageIdStr);
                     //richiamo al metodo di eliminazione del messaggio tramite id nella classe Topic
-                    topic.deleteMessage(messageId);
-                    //mancano i controlli di esistenza o meno del messageid, da fare o qua o nella classe topic direttamente nel metodo
+                    for (Message message : topic.getMessages()) {
+                        if(message.getId()==messageId)
+                        {
+                            trovato=true;
+                            break;
+                        }
+                    }
+
+                    if(trovato) {
+                        topic.deleteMessage(messageId);
+                        System.out.println("Messaggio avente id "+"'"+messageId+"'"+" correttamente eliminato");
+                    }
+                    else
+                        System.out.println("Messaggio avente id "+"'"+messageId+"'"+" non trovato");
 
                 } else if (userInput.startsWith("end")) {
                     topic.setInInspection(false);
