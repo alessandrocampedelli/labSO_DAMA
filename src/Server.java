@@ -17,24 +17,24 @@ public class Server {
         }
         */
         int port = DEFAULT_PORT; // Usa la porta predefinita
-        List<Socket> listClientSocket = new ArrayList<>();
+        List<User> listClient = new ArrayList<>();
         
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server in ascolto sulla porta " + port);
 
             //gestisco contemporaneamente la console del server all'attesa di nuovi client
-            new ServerHandler(serverSocket,listClientSocket).start();
+            new ServerHandler(serverSocket,listClient).start();
 
             // Accetta connessioni dei client in un ciclo infinito
             while (!serverSocket.isClosed()) {
                 try {
                     Socket clientSocket = serverSocket.accept();
 
-                    new ClientHandler(clientSocket, listClientSocket).start();
+                    new ClientHandler(clientSocket, listClient).start();
 
-                    synchronized (listClientSocket) {
-                        listClientSocket.add(clientSocket);
+                    synchronized (listClient) {
+                        listClient.add(new User(clientSocket));
                     }
                 }catch (IOException e) { //quando chiudo il server l'accept non riesce più ad eseguire in quanto la serversocket è ststa chiusa
                     if (!serverSocket.isClosed()) {

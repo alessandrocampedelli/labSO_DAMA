@@ -26,7 +26,7 @@ public class Subscriber extends User {
         } else if (inputLine.equals("quit")) {
             out.println("Disconnessione in corso...");
         }else if (inputLine.equals("inspect")) {
-            out.println("il topic è in ispezione");
+            out.println("Il topic è in ispezione. Il messaggio verrà elaborato dal server una volta terminata la fase di ispezione");
         }  else {
             out.println("Comando sconosciuto.");
         }

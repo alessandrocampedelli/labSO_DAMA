@@ -6,12 +6,12 @@ import java.util.Scanner;
 
 public class ServerHandler extends Thread {
     private final ServerSocket serverSocket;
-    private final List<Socket> listClientSocket;
+    private final List<User> listClient;
     private final Scanner stdIn;
 
-    public ServerHandler(ServerSocket serverSocket, List<Socket> listClientSocket) {
+    public ServerHandler(ServerSocket serverSocket, List<User> listClient) {
         this.serverSocket = serverSocket;
-        this.listClientSocket = listClientSocket;
+        this.listClient = listClient;
         this.stdIn = new Scanner(System.in);
     }
 
@@ -48,16 +48,16 @@ public class ServerHandler extends Thread {
 
     private void stopServer() {
         int numDisconnected = 0;
-        synchronized (listClientSocket) {
-            for (Socket clientSocket : listClientSocket) {
+        synchronized (listClient) {
+            for (User client : listClient) {
                 try {
-                    clientSocket.close();
+                    client.getClientSocket().close();
                     numDisconnected++;
                 } catch (IOException e) {
                     System.err.println("Errore durante la chiusura del socket client: " + e.getMessage());
                 }
             }
-            listClientSocket.clear();
+            listClient.clear();
         }
 
         try {
@@ -133,6 +133,7 @@ public class ServerHandler extends Thread {
 
                 } else if (userInput.startsWith("end")) {
                     topic.setInInspection(false);
+                    this.processAllInspectMessage();
                     System.out.println("Sessione topic chiusa");
                     break;
                 } else {
@@ -145,8 +146,16 @@ public class ServerHandler extends Thread {
     }
 
     private void showClientCount() {
-        synchronized (listClientSocket) {
-            System.out.println("Client connessi: " + listClientSocket.size());
+        synchronized (listClient) {
+            System.out.println("Client connessi: " + listClient.size());
+        }
+    }
+
+    private void processAllInspectMessage(){
+        for(User s : this.listClient){
+            synchronized (s){
+                s.processInspectMessages();
+            }
         }
     }
 }

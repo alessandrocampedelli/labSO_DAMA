@@ -10,14 +10,14 @@ import java.util.Scanner;
 public class ClientHandler extends Thread {
     private final Socket clientSocket;
     private User client;
-    private List<Socket> listClientSocket;
+    private List<User> listClient;
     private volatile boolean running = true; // Variabile per controllare il ciclo di esecuzione
     private Scanner in;
     private PrintStream out;
 
-    public ClientHandler(Socket socket, List<Socket> listClientSocket) {
+    public ClientHandler(Socket socket, List<User> listClient) {
         this.clientSocket = socket;
-        this.listClientSocket = listClientSocket;
+        this.listClient = listClient;
     }
 
     @Override
@@ -61,7 +61,9 @@ public class ClientHandler extends Thread {
                      Ovviamente bignerà trovare un modo nelle sottoclassi di user per distinguere i due tipi di handleCommand, uno per salvare tutte le stringhe
                      in attesa in un vettore per poi eseguirle in un secondo momento e l'altro per eseguire normalmente l'handleCommand delle stringhe non in attesa.
                      */
-                    client.handleCommand("inspect");    //quando il topic è in fase di ispezione dal server
+                    client.handleCommand("inspect");
+                    //aggiungo il messaggio inviato alla lista
+                    client.addInspectMessage(inputLine);
                 }
                 if (inputLine.equals("quit")) {
                     System.out.println("Client disconnesso");
@@ -82,8 +84,8 @@ public class ClientHandler extends Thread {
     public void stopClient() {
         running = false; // Interrompe il ciclo di esecuzione
         try {
-            synchronized (listClientSocket) {
-                listClientSocket.remove(clientSocket);
+            synchronized (listClient) {
+                listClient.remove(clientSocket);
             }
             if (!clientSocket.isClosed()) {
                 clientSocket.close();

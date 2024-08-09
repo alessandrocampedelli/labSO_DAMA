@@ -3,18 +3,22 @@ import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-public abstract class User {
+public class User {
     protected Socket clientSocket;
     protected PrintWriter out;
     protected BufferedReader in;
     protected Topic currentTopic;
+    protected LinkedList<String> inspectMessages;
 
     public User(Socket socket) {
         this.clientSocket = socket;
+        this.inspectMessages = new LinkedList<>();
     }
 
-    public abstract void handleCommand(String inputLine);
+    public void handleCommand(String inputLine){};
 
     // Invia un messaggio al client
     public void sendMessage(Message message) {
@@ -22,6 +26,22 @@ public abstract class User {
     }
     public Topic getTopic(){
         return this.currentTopic;
+    }
+
+    //inserisco in coda il messaggio da elaborare
+    protected void addInspectMessage(String m){
+        this.inspectMessages.addLast(m);
+    }
+
+    protected Socket getClientSocket(){
+        return this.clientSocket;
+    }
+    protected synchronized void processInspectMessages(){
+        //finchè la lista di strighe non è vuota elaboro l'elemento in testa
+        while(!inspectMessages.isEmpty()){
+            this.handleCommand(inspectMessages.getFirst());
+            this.inspectMessages.removeFirst();
+        }
     }
 
     protected void registerOutputAndInput() throws IOException {
