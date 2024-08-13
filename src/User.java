@@ -3,48 +3,56 @@ import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class User {
+public class User
+{
     protected Socket clientSocket;
     protected PrintWriter out;
     protected BufferedReader in;
     protected Topic currentTopic;
     protected LinkedList<String> inspectMessages;
 
-    public User(Socket socket) {
+    public User(Socket socket)
+    {
         this.clientSocket = socket;
         this.inspectMessages = new LinkedList<>();
     }
 
-    public void handleCommand(String inputLine){};
-
-    // Invia un messaggio al client
-    public void sendMessage(Message message) {
-        out.println("Nuovo messaggio sul topic " + currentTopic.getName() + ": " + message);
-    }
-    public Topic getTopic(){
+    public Topic getTopic()
+    {
         return this.currentTopic;
     }
-
-    //inserisco in coda il messaggio da elaborare
-    protected void addInspectMessage(String m){
-        this.inspectMessages.addLast(m);
-    }
-
-    protected Socket getClientSocket(){
+    protected Socket getClientSocket()
+    {
         return this.clientSocket;
     }
-    protected synchronized void processInspectMessages(){
+    public void handleCommand(String inputLine)
+    {
+
+    };
+
+    // Invia un messaggio al client
+    public void sendMessage(Message message)
+    {
+        out.println("Nuovo messaggio sul topic " + currentTopic.getName() + ": " + message);
+    }
+    //inserisco in coda il messaggio da elaborare
+    protected void addInspectMessage(String m)
+    {
+        this.inspectMessages.add(m);
+    }
+    protected void processInspectMessages()
+    {
         //finchè la lista di strighe non è vuota elaboro l'elemento in testa
-        while(!inspectMessages.isEmpty()){
+        while(!inspectMessages.isEmpty())
+        {
             this.handleCommand(inspectMessages.getFirst());
             this.inspectMessages.removeFirst();
         }
     }
-
-    protected void registerOutputAndInput() throws IOException {
+    protected void registerOutputAndInput() throws IOException
+    {
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }

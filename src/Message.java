@@ -1,13 +1,15 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Message {
+public class Message
+{
     private static int counter = 0;
     private final int id;
     private final String text;
     private final String dataOra;
 
-    public Message(String text) {
+    public Message(String text)
+    {
         this.id = ++counter;
         this.text = text;
         LocalDateTime now = LocalDateTime.now();
@@ -15,20 +17,21 @@ public class Message {
         this.dataOra = now.format(formatter);
     }
 
-    public int getId() {
+    public int getId()
+    {
         return id;
     }
-
-    public String getText() {
+    public String getText()
+    {
         return text;
     }
-
-    public String getDataOra() {
+    public String getDataOra()
+    {
         return dataOra;
     }
-
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ID: " + id + "\nTesto: " + text + "\nData: " + dataOra;
     }
 }

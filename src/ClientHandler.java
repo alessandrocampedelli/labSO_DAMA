@@ -7,7 +7,8 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.Scanner;
 
-public class ClientHandler extends Thread {
+public class ClientHandler extends Thread
+{
     private final Socket clientSocket;
     private User client;
     private List<User> listClient;
@@ -15,43 +16,52 @@ public class ClientHandler extends Thread {
     private Scanner in;
     private PrintStream out;
 
-    public ClientHandler(Socket socket, List<User> listClient) {
+    public ClientHandler(Socket socket, List<User> listClient)
+    {
         this.clientSocket = socket;
         this.listClient = listClient;
     }
 
     @Override
-    public void run() {
-        try {
+    public void run()
+    {
+        try
+        {
             InputStream inputStream = clientSocket.getInputStream();
             OutputStream outputStream = clientSocket.getOutputStream();
             in = new Scanner(inputStream);
             out = new PrintStream(outputStream, true);
-
             String inputLine = in.nextLine();
-
-            if (inputLine.startsWith("publish ")) {
+            if (inputLine.startsWith("publish "))
+            {
                 client = new Publisher(clientSocket);
                 client.registerOutputAndInput();
                 client.handleCommand(inputLine);
 
-            } else if (inputLine.startsWith("subscribe ")) {
+            }
+            else if (inputLine.startsWith("subscribe "))
+            {
                 client = new Subscriber(clientSocket);
                 client.registerOutputAndInput();
                 client.handleCommand(inputLine);
 
-            } else {
+            }
+            else
+            {
                 out.println("Devi prima registrarti come publisher o subscriber.");
                 stopClient(); // Utilizza il metodo per fermare il client
                 return;
             }
-
             // Ciclo per gestire ulteriori comandi
-            while (running && in.hasNextLine()) {
+            while (running && in.hasNextLine())
+            {
                 inputLine = in.nextLine();
-                if (!client.getTopic().isInInspection()) {
+                if (!client.getTopic().isInInspection())
+                {
                     client.handleCommand(inputLine);
-                }else {
+                }
+                else
+                {
                     /*
                      Il comando handleCommand dentro questo else è importantissimo, senza il metodo
                      compare un "errore" con la console che non legge più le stringhe inviate, generando un loop infinito che ci permette soltanto di
@@ -65,32 +75,46 @@ public class ClientHandler extends Thread {
                     //aggiungo il messaggio inviato alla lista
                     client.addInspectMessage(inputLine);
                 }
-                if (inputLine.equals("quit")) {
+                if (inputLine.equals("quit"))
+                {
                     System.out.println("Client disconnesso");
                     break;
                 }
             }
 
-        } catch (SocketException e) { //quando faccio quit il buffer genera un eccezione in quanto la socket è stata chiusa
+        }
+        catch (SocketException e)
+        {
+            //quando faccio quit il buffer genera un eccezione in quanto la socket è stata chiusa
             System.err.println("SocketException: " + e.getMessage());
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
-        } finally {
+        }
+        finally
+        {
             stopClient(); // Chiude il socket e rimuove il client dalla lista
         }
     }
 
     // Metodo per fermare il client
-    public void stopClient() {
+    public void stopClient()
+    {
         running = false; // Interrompe il ciclo di esecuzione
-        try {
-            synchronized (listClient) {
+        try
+        {
+            synchronized (listClient)
+            {
                 listClient.remove(clientSocket);
             }
-            if (!clientSocket.isClosed()) {
+            if (!clientSocket.isClosed())
+            {
                 clientSocket.close();
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
         }
     }
