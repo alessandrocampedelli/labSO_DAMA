@@ -46,6 +46,7 @@ public class ClientHandler extends Thread {
                 System.out.println("nuovo user: "+System.identityHashCode(client));
             }
 
+
             // Ciclo per gestire ulteriori comandi
             while (running && in.hasNextLine()) {
                 String inputLine = in.nextLine();
