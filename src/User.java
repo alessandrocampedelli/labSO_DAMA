@@ -41,9 +41,13 @@ public class User
     protected void addInspectMessage(String m)
     {
         this.inspectMessages.add(m);
+        System.out.println("User reference in addInspectMessage: " + System.identityHashCode(this));
+        System.out.println("inspect messages attuali:" + inspectMessages.size());
     }
     protected void processInspectMessages()
     {
+        System.out.println("User reference in processInspectMessages: " + System.identityHashCode(this));
+        System.out.println("Inspect messages: " + inspectMessages.size());
         //finchè la lista di strighe non è vuota elaboro l'elemento in testa
         while(!inspectMessages.isEmpty())
         {

@@ -205,11 +205,11 @@ public class ServerHandler extends Thread
         }
     }
 
-    private void processAllInspectMessage()
-    {
-        for(User s : this.listClient)
-        {
-            s.processInspectMessages();
+    private void processAllInspectMessage() {
+        synchronized (listClient) {
+            for (User client : listClient) {
+                client.processInspectMessages();
+            }
         }
     }
 }
