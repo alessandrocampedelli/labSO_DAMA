@@ -180,9 +180,9 @@ public class ServerHandler extends Thread
                 }
                 else if (userInput.startsWith("end"))
                 {
+                    this.processAllInspectMessage();
                     topic.setInInspection(false);
                     System.out.println("Sessione topic chiusa");
-                    this.processAllInspectMessage();
                     break;
                 }
                 else
@@ -206,10 +206,9 @@ public class ServerHandler extends Thread
     }
 
     private void processAllInspectMessage() {
-        synchronized (listClient) {
-            for (User client : listClient) {
+        for (User client : listClient)
+        {
                 client.processInspectMessages();
-            }
         }
     }
 }

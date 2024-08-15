@@ -34,10 +34,6 @@ public class Server
                 {
                     Socket clientSocket = serverSocket.accept();
                     new ClientHandler(clientSocket, listClient).start();
-                    synchronized (listClient)
-                    {
-                        listClient.add(new User(clientSocket));
-                    }
                 }
                 catch (IOException e)
                 {

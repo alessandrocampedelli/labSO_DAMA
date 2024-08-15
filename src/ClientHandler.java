@@ -21,8 +21,10 @@ public class ClientHandler extends Thread {
     }
 
     @Override
-    public void run() {
-        try {
+    public void run()
+    {
+        try
+        {
             // Configurazione input/output
             InputStream inputStream = clientSocket.getInputStream();
             OutputStream outputStream = clientSocket.getOutputStream();
@@ -30,20 +32,33 @@ public class ClientHandler extends Thread {
             out = new PrintStream(outputStream, true);
 
             // Verifica se l'utente è già registrato
-            if (client == null) {
+            if (client == null)
+            {
                 String inputLine = in.nextLine();
-                if (inputLine.startsWith("publish ")) {
+                if (inputLine.startsWith("publish "))
+                {
                     client = new Publisher(clientSocket);
-                } else if (inputLine.startsWith("subscribe ")) {
+                    client.registerOutputAndInput();
+                    client.handleCommand(inputLine);
+                    synchronized (listClient)
+                    {
+                        listClient.add(client);
+                    }
+                }
+                else if (inputLine.startsWith("subscribe "))
+                {
                     client = new Subscriber(clientSocket);
+                    client.registerOutputAndInput();
+                    client.handleCommand(inputLine);
+                    synchronized (listClient)
+                    {
+                        listClient.add(client);
+                    }
                 } else {
                     out.println("Devi prima registrarti come publisher o subscriber.");
                     stopClient();
                     return;
                 }
-                client.registerOutputAndInput();
-                client.handleCommand(inputLine);
-                System.out.println("nuovo user: "+System.identityHashCode(client));
             }
 
 
@@ -75,7 +90,7 @@ public class ClientHandler extends Thread {
         running = false;
         try {
             synchronized (listClient) {
-                listClient.remove(clientSocket);
+                listClient.removeIf(user -> user.getClientSocket().equals(clientSocket));
             }
             if (!clientSocket.isClosed()) {
                 clientSocket.close();
