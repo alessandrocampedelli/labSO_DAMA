@@ -31,30 +31,40 @@ public class ClientHandler extends Thread {
 
             // Verifica se l'utente è già registrato
             if (client == null) {
-                String inputLine = in.nextLine();
-                if (inputLine.startsWith("publish ")) {
-                    String topicName = inputLine.substring(8).trim();
-                    client = new Publisher(clientSocket,Server.getOrCreateTopic(topicName));
-                    client.registerOutputAndInput();
-                    client.handleCommand(inputLine);
-                    synchronized (listClient) {
-                        listClient.add(client);
+                //se l'utente non è già registrato, esso si deve registrare per forza prima di proseguire
+                while(client == null){
+                    String inputLine = in.nextLine();
+                    if (inputLine.startsWith("publish ")) {
+                        String topicName = inputLine.substring(8).trim();
+                        if(!topicName.isEmpty()){
+                            client = new Publisher(clientSocket,Server.getOrCreateTopic(topicName));
+                            client.registerOutputAndInput();
+                            client.handleCommand(inputLine);
+                            synchronized (listClient) {
+                                listClient.add(client);
+                            }
+                            // Stampa il messaggio sulla console del server
+                            System.out.println("Un nuovo client si è connesso come PUBLISHER al topic " + topicName.toUpperCase());
+                        }else{
+                            out.println("Errore: il topic non è specificato. Riprova");
+                        }
+                    } else if (inputLine.startsWith("subscribe ")) {
+                        String topicName = inputLine.substring(10).trim();
+                        if(!topicName.isEmpty()){
+                            client = new Subscriber(clientSocket,Server.getOrCreateTopic(topicName));
+                            client.registerOutputAndInput();
+                            client.handleCommand(inputLine);
+                            synchronized (listClient) {
+                                listClient.add(client);
+                            }
+                            // Stampa il messaggio sulla console del server
+                            System.out.println("Un nuovo client si è connesso come SUBSCRIBER al topic " + topicName.toUpperCase());
+                        }else{
+                            out.println("Errore: il topic non è specificato. Riprova");
+                        }
+                    } else {
+                        out.println("Devi prima registrarti come publisher o subscriber.");
                     }
-                    // Stampa il messaggio sulla console del server
-                    System.out.println("Un nuovo client si è connesso come PUBLISHER al topic " + topicName.toUpperCase());
-                } else if (inputLine.startsWith("subscribe ")) {
-                    String topicName = inputLine.substring(10).trim();
-                    client = new Subscriber(clientSocket,Server.getOrCreateTopic(topicName));
-                    client.registerOutputAndInput();
-                    client.handleCommand(inputLine);
-                    synchronized (listClient) {
-                        listClient.add(client);
-                    }
-                    // Stampa il messaggio sulla console del server
-                    System.out.println("Un nuovo client si è connesso come SUBSCRIBER al topic " + topicName.toUpperCase());
-                } else {
-                    out.println("Devi prima registrarti come publisher o subscriber.");
-                    return;
                 }
             }
 
