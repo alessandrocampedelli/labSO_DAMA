@@ -3,9 +3,9 @@ import java.net.Socket;
 
 public class Publisher extends User
 {
-    public Publisher(Socket socket)
+    public Publisher(Socket socket, Topic topic)
     {
-        super(socket);
+        super(socket, topic);
     }
 
     @Override

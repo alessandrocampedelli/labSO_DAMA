@@ -13,10 +13,11 @@ public class User
     protected Topic currentTopic;
     protected LinkedList<String> inspectMessages;
 
-    public User(Socket socket)
+    public User(Socket socket, Topic topic)
     {
         this.clientSocket = socket;
         this.inspectMessages = new LinkedList<>();
+        this.currentTopic = topic;
     }
 
     public Topic getTopic()

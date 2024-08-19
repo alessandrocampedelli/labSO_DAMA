@@ -2,9 +2,9 @@ import java.net.Socket;
 
 public class Subscriber extends User
 {
-    public Subscriber(Socket socket)
+    public Subscriber(Socket socket, Topic topic)
     {
-        super(socket);
+        super(socket, topic);
     }
 
     @Override
