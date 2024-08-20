@@ -4,11 +4,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.PrintWriter;
+import java.io.PrintStream;
 
 public class Server
 {
     public static final List<Topic> topics = new ArrayList<>();
-    private static final int DEFAULT_PORT = 9000; // Porta predefinita
+    private static final int DEFAULT_PORT = 9000;
 
     public static void main(String[] args)
     {
@@ -18,7 +19,8 @@ public class Server
             return;
         }
         */
-        int port = DEFAULT_PORT; // Usa la porta predefinita
+
+        int port = DEFAULT_PORT;
         List<User> listClient = new ArrayList<>();
         
         try
@@ -27,7 +29,7 @@ public class Server
             System.out.println("Server in ascolto sulla porta " + port);
             //gestisco contemporaneamente la console del server all'attesa di nuovi client
             new ServerHandler(serverSocket,listClient).start();
-            // Accetta connessioni dei client in un ciclo infinito
+            //accetta connessioni dei client in un ciclo infinito
             while (!serverSocket.isClosed())
             {
                 try
@@ -52,7 +54,7 @@ public class Server
         }
     }
 
-    // Crea o recupera un topic esistente
+    //metodo crea o recupera un topic esistente
     public static synchronized Topic getOrCreateTopic(String name)
     {
         for (Topic topic : topics)
@@ -67,8 +69,18 @@ public class Server
         return newTopic;
     }
 
-    // Mostra la lista dei topic attualmente disponibili
+    //metodo che mostra la lista dei topic attualmente disponibili
     public static synchronized void showTopics(PrintWriter out)
+    {
+        out.println("Topics:");
+        for (Topic topic : topics)
+        {
+            out.println("- " + topic.getName());
+        }
+    }
+
+    //metodo che mostra la lista dei topic attualmente disponibili
+    public static synchronized void showTopics(PrintStream out)
     {
         out.println("Topics:");
         for (Topic topic : topics)

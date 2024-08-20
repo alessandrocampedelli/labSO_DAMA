@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.util.List;
 import java.util.Scanner;
@@ -8,6 +9,7 @@ public class ServerHandler extends Thread
     private final ServerSocket serverSocket;
     private final List<User> listClient;
     private final Scanner stdIn;
+    private PrintWriter out = new PrintWriter(System.out, true);;
 
     public ServerHandler(ServerSocket serverSocket, List<User> listClient)
     {
@@ -31,7 +33,7 @@ public class ServerHandler extends Thread
                 }
                 else if (userInput.startsWith("show"))
                 {
-                    showTopics();
+                    Server.showTopics(out);
                 }
                 else if (userInput.startsWith("inspect "))
                 {
@@ -45,10 +47,6 @@ public class ServerHandler extends Thread
                     {
                         sessioneInterattiva(topic);
                     }
-                }
-                else if (userInput.startsWith("num client"))
-                {
-                    showClientCount();
                 }
                 else
                 {
@@ -68,7 +66,6 @@ public class ServerHandler extends Thread
 
     private void stopServer()
     {
-        int numDisconnected = 0;
         synchronized (listClient)
         {
             for (User client : listClient)
@@ -76,7 +73,6 @@ public class ServerHandler extends Thread
                 try
                 {
                     client.getClientSocket().close();
-                    numDisconnected++;
                 }
                 catch (IOException e)
                 {
@@ -97,19 +93,7 @@ public class ServerHandler extends Thread
         {
             System.err.println("Errore durante la chiusura del ServerSocket: " + e.getMessage());
         }
-        System.out.println("Numero client scollegati: " + numDisconnected);
         System.out.println("Server scollegato...");
-    }
-
-    private void showTopics() {
-        System.out.println("Topics: ");
-        synchronized (Server.topics)
-        {
-            for (Topic topic : Server.topics)
-            {
-                System.out.println("    - " + topic.getName());
-            }
-        }
     }
 
     private Topic getTopicByName(String name)
@@ -131,13 +115,12 @@ public class ServerHandler extends Thread
     {
         topic.setInInspection(true);
         System.out.println("Sessione per il topic: " + topic.getName() + " iniziata");
-
         try
         {
             String userInput;
             while ((userInput = stdIn.nextLine()) != null)
             {
-                if (userInput.startsWith("listall"))
+                if (userInput.startsWith(":listall"))
                 {
                     if (topic.getMessages().isEmpty())
                     {
@@ -152,7 +135,7 @@ public class ServerHandler extends Thread
                         }
                     }
                 }
-                else if (userInput.startsWith("delete "))
+                else if (userInput.startsWith(":delete "))
                 {
                     boolean trovato=false;
                     String messageIdStr = userInput.split(" ", 2)[1].trim();
@@ -177,7 +160,7 @@ public class ServerHandler extends Thread
                         System.out.println("Messaggio avente id "+"'"+messageId+"'"+" non trovato");
                     }
                 }
-                else if (userInput.startsWith("end"))
+                else if (userInput.startsWith(":end"))
                 {
                     this.processAllInspectMessage();
                     topic.setInInspection(false);
@@ -196,15 +179,8 @@ public class ServerHandler extends Thread
         }
     }
 
-    private void showClientCount()
+    private void processAllInspectMessage()
     {
-        synchronized (listClient)
-        {
-            System.out.println("Client connessi: " + listClient.size());
-        }
-    }
-
-    private void processAllInspectMessage() {
         for (User client : listClient)
         {
             client.processInspectMessages();

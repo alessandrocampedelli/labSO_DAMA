@@ -17,10 +17,12 @@ public class Topic
     {
         return name;
     }
+
     public boolean isInInspection()
     {
         return inInspection;
     }
+
     public void setInInspection(boolean inInspection)
     {
         this.inInspection = inInspection;
@@ -32,16 +34,19 @@ public class Topic
         messages.add(message);
         notifySubscribers(message);
     }
+
     // Restituisce tutti i messaggi del topic
     public synchronized List<Message> getMessages()
     {
         return new ArrayList<>(messages);
     }
+
     // Aggiunge un subscriber alla lista dei subscriber
     public synchronized void subscribe(Subscriber client)
     {
         subscribers.add(client);
     }
+
     // Notifica tutti i subscriber con un nuovo messaggio
     private void notifySubscribers(Message message)
     {
@@ -50,6 +55,7 @@ public class Topic
             client.sendMessage(message);
         }
     }
+
     // Elimina un messaggio dal topic dato il suo ID
     public synchronized void deleteMessage(int id)
     {

@@ -1,8 +1,11 @@
-import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Publisher extends User
 {
+    private List<Message> messaggiUtente = new ArrayList<>();
+
     public Publisher(Socket socket, Topic topic)
     {
         super(socket, topic);
@@ -24,6 +27,8 @@ public class Publisher extends User
             if (currentTopic != null)
             {
                 currentTopic.addMessage(message);
+                //aggiunta del messaggio alla lista dei messaggi dell'utente
+                messaggiUtente.add(message);
                 out.println("Messaggio inviato.");
             }
             else
@@ -35,8 +40,8 @@ public class Publisher extends User
         {
             if (currentTopic != null)
             {
-                out.println("Messaggi:");
-                for (Message message : currentTopic.getMessages())
+                out.println("Messaggi inviati dal client:");
+                for (Message message : messaggiUtente)
                 {
                     out.println(message);
                 }
@@ -50,7 +55,7 @@ public class Publisher extends User
         {
             if (currentTopic != null)
             {
-                out.println("Messaggi:");
+                out.println("Messaggi nel topic:");
                 for (Message message : currentTopic.getMessages())
                 {
                     out.println(message);

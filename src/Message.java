@@ -21,14 +21,17 @@ public class Message
     {
         return id;
     }
+
     public String getText()
     {
         return text;
     }
+
     public String getDataOra()
     {
         return dataOra;
     }
+
     @Override
     public String toString()
     {

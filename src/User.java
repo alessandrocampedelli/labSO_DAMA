@@ -24,6 +24,7 @@ public class User
     {
         return this.currentTopic;
     }
+
     protected Socket getClientSocket()
     {
         return this.clientSocket;
@@ -36,11 +37,13 @@ public class User
     {
         out.println("Nuovo messaggio sul topic " + currentTopic.getName() + ": " + message);
     }
+
     //inserisco in coda il messaggio da elaborare
     protected void addInspectMessage(String m)
     {
         this.inspectMessages.add(m);
     }
+
     protected void processInspectMessages()
     {
         //finchè la lista di strighe non è vuota elaboro l'elemento in testa
@@ -50,6 +53,7 @@ public class User
             this.inspectMessages.removeFirst();
         }
     }
+
     protected void registerOutputAndInput() throws IOException
     {
         out = new PrintWriter(clientSocket.getOutputStream(), true);
