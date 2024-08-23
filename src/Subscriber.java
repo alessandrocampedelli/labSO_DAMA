@@ -15,16 +15,20 @@ public class Subscriber extends User
             String topicName = inputLine.split(" ")[1];
             currentTopic = Server.getOrCreateTopic(topicName);
             currentTopic.subscribe(this);
-            out.println("Iscritto al topic: " + topicName);
+            out.println("Registrato come SUBSCRIBER per il topic " + topicName.toUpperCase());
         }
         else if (inputLine.equals("listall"))
         {
                 if (currentTopic != null)
                 {
-                    out.println("Messaggi:");
-                    for (Message message : currentTopic.getMessages())
-                    {
-                        out.println(message);
+                    if(!currentTopic.getMessages().isEmpty()){
+                        out.println("Messaggi presenti sul topic "+currentTopic.getName().toUpperCase());
+                        for (Message message : currentTopic.getMessages())
+                        {
+                            out.println(message);
+                        }
+                    }else{
+                        out.println("Non è stato ancora pubblicato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                     }
                 }
                 else

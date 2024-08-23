@@ -120,7 +120,7 @@ public class ServerHandler extends Thread
             String userInput;
             while ((userInput = stdIn.nextLine()) != null)
             {
-                if (userInput.startsWith(":listall"))
+                if (userInput.startsWith("listall"))
                 {
                     if (topic.getMessages().isEmpty())
                     {
@@ -135,7 +135,7 @@ public class ServerHandler extends Thread
                         }
                     }
                 }
-                else if (userInput.startsWith(":delete "))
+                else if (userInput.startsWith("delete "))
                 {
                     boolean trovato=false;
                     String messageIdStr = userInput.split(" ", 2)[1].trim();
@@ -160,7 +160,7 @@ public class ServerHandler extends Thread
                         System.out.println("Messaggio avente id "+"'"+messageId+"'"+" non trovato");
                     }
                 }
-                else if (userInput.startsWith(":end"))
+                else if (userInput.startsWith("end"))
                 {
                     this.processAllInspectMessage();
                     topic.setInInspection(false);

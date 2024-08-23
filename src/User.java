@@ -35,7 +35,7 @@ public class User
     // Invia un messaggio al client
     public void sendMessage(Message message)
     {
-        out.println("Nuovo messaggio sul topic " + currentTopic.getName() + ": " + message);
+        out.println("Nuovo messaggio inviato sul topic " + currentTopic.getName().toUpperCase() + ":\n" + message);
     }
 
     //inserisco in coda il messaggio da elaborare

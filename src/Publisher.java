@@ -18,7 +18,7 @@ public class Publisher extends User
         {
             String topicName = inputLine.split(" ")[1];
             currentTopic = Server.getOrCreateTopic(topicName);
-            out.println("Registrato come publisher per il topic: " + topicName);
+            out.println("Registrato come PUBLISHER per il topic " + topicName.toUpperCase());
         }
         else if (inputLine.startsWith("send "))
         {
@@ -33,14 +33,14 @@ public class Publisher extends User
             }
             else
             {
-                out.println("Devi prima pubblicare su un topic.");
+                out.println("Prima di inviare un messaggio devi prima specificare il topic.");
             }
         }
         else if (inputLine.equals("list"))
         {
             if (currentTopic != null)
             {
-                out.println("Messaggi inviati dal client:");
+                out.println("Messaggi inviati da te sul topic "+currentTopic.getName().toUpperCase());
                 for (Message message : messaggiUtente)
                 {
                     out.println(message);
@@ -48,17 +48,21 @@ public class Publisher extends User
             }
             else
             {
-                out.println("Devi prima iscriverti a un topic.");
+                out.println("Per poter riceve la lista dei tuoi messaggi inviati devi prima iscriverti a un topic.");
             }
         }
         else if (inputLine.equals("listall"))
         {
             if (currentTopic != null)
             {
-                out.println("Messaggi nel topic:");
-                for (Message message : currentTopic.getMessages())
-                {
-                    out.println(message);
+                if(!currentTopic.getMessages().isEmpty()){
+                    out.println("Messaggi presenti sul topic "+currentTopic.getName().toUpperCase());
+                    for (Message message : currentTopic.getMessages())
+                    {
+                        out.println(message);
+                    }
+                }else{
+                    out.println("Non è stato ancora pubblicato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                 }
             }
             else

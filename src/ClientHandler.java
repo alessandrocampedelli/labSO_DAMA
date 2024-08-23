@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ClientHandler extends Thread
@@ -37,58 +38,63 @@ public class ClientHandler extends Thread
                 //se l'utente non è già registrato, esso si deve registrare per forza prima di proseguire
                 while(client == null)
                 {
-                    String inputLine = in.nextLine();
-                    if (inputLine.startsWith("publish "))
-                    {
-                        String topicName = inputLine.substring(8).trim();
-                        if(!topicName.isEmpty())
+                    try{
+                        String inputLine = in.nextLine();
+                        if (inputLine.startsWith("publish "))
                         {
-                            client = new Publisher(clientSocket,Server.getOrCreateTopic(topicName));
-                            client.registerOutputAndInput();
-                            client.handleCommand(inputLine);
-                            synchronized (listClient)
+                            String topicName = inputLine.substring(8).trim();
+                            if(!topicName.isEmpty())
                             {
-                                listClient.add(client);
+                                client = new Publisher(clientSocket,Server.getOrCreateTopic(topicName));
+                                client.registerOutputAndInput();
+                                client.handleCommand(inputLine);
+                                synchronized (listClient)
+                                {
+                                    listClient.add(client);
+                                }
+                                //stampa il messaggio sulla console del server
+                                System.out.println("Un nuovo client si è connesso come PUBLISHER al topic " + topicName.toUpperCase());
                             }
-                            //stampa il messaggio sulla console del server
-                            System.out.println("Un nuovo client si è connesso come PUBLISHER al topic " + topicName.toUpperCase());
+                            else
+                            {
+                                out.println("Errore: il topic non è specificato. Riprova");
+                            }
+                        }
+                        else if (inputLine.startsWith("subscribe "))
+                        {
+                            String topicName = inputLine.substring(10).trim();
+                            if(!topicName.isEmpty())
+                            {
+                                client = new Subscriber(clientSocket,Server.getOrCreateTopic(topicName));
+                                client.registerOutputAndInput();
+                                client.handleCommand(inputLine);
+                                synchronized (listClient)
+                                {
+                                    listClient.add(client);
+                                }
+                                //stampa il messaggio sulla console del server
+                                System.out.println("Un nuovo client si è connesso come SUBSCRIBER al topic " + topicName.toUpperCase());
+                            }
+                            else
+                            {
+                                out.println("Errore: il topic non è specificato. Riprova");
+                            }
+                        }
+                        else if(inputLine.equals("show"))
+                        {
+                            Server.showTopics(out);
+                        }
+                        else if(inputLine.equals("quit"))
+                        {
+                            out.println("Disconnessione in corso...");
                         }
                         else
                         {
-                            out.println("Errore: il topic non è specificato. Riprova");
+                            out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
                         }
-                    }
-                    else if (inputLine.startsWith("subscribe "))
-                    {
-                        String topicName = inputLine.substring(10).trim();
-                        if(!topicName.isEmpty())
-                        {
-                            client = new Subscriber(clientSocket,Server.getOrCreateTopic(topicName));
-                            client.registerOutputAndInput();
-                            client.handleCommand(inputLine);
-                            synchronized (listClient)
-                            {
-                                listClient.add(client);
-                            }
-                            //stampa il messaggio sulla console del server
-                            System.out.println("Un nuovo client si è connesso come SUBSCRIBER al topic " + topicName.toUpperCase());
-                        }
-                        else
-                        {
-                            out.println("Errore: il topic non è specificato. Riprova");
-                        }
-                    }
-                    else if(inputLine.equals("show"))
-                    {
-                        Server.showTopics(out);
-                    }
-                    else if(inputLine.equals("quit"))
-                    {
-                        out.println("Disconnessione in corso...");
-                    }
-                    else
-                    {
-                        out.println("Devi prima registrarti come publisher o subscriber.");
+                    }catch(NoSuchElementException e){
+                        //eccezione gestita per quando un client scrive il comando quit ancora prima di scrivere publish o subscribe
+                        return;
                     }
                 }
             }

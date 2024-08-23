@@ -36,10 +36,15 @@ public class Client
                     String response;
                     while (!socket.isClosed() && (response = in.readLine()) != null)
                     {
-                        System.out.println(response);
-                        if(!in.ready())
-                        {
-                            System.out.println();
+                        //TODO: codice da completare da campe per chiusura corretta dei client
+                        if(response.equals("close")){
+                            System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
+                        }else{
+                            System.out.println(response);
+                            if(!in.ready())
+                            {
+                                System.out.println();
+                            }
                         }
                     }
                 }
