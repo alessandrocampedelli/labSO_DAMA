@@ -48,7 +48,6 @@ public class ServerHandler extends Thread
                     {
                         notifyUsers("#session_start", topic);
                         sessioneInterattiva(topic);
-                        notifyUsers("#session_end", topic);
                     }
                 }
                 else
@@ -134,7 +133,7 @@ public class ServerHandler extends Thread
     private void sessioneInterattiva(Topic topic)
     {
         topic.setInInspection(true);
-        System.out.println("Sessione per il topic: " + topic.getName() + " iniziata");
+        System.out.println("Sessione per il topic " + topic.getName().toUpperCase() + " iniziata");
         try
         {
             String userInput;
@@ -182,6 +181,7 @@ public class ServerHandler extends Thread
                 }
                 else if (userInput.startsWith("end"))
                 {
+                    notifyUsers("#session_end", topic);
                     this.processAllInspectMessage();
                     topic.setInInspection(false);
                     System.out.println("Sessione topic chiusa");
