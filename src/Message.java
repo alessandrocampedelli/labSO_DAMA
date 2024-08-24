@@ -11,7 +11,7 @@ public class Message
     public Message(String text)
     {
         this.id = ++counter;
-        this.text = text;
+        this.text = text.trim();
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         this.dataOra = now.format(formatter);
@@ -25,11 +25,6 @@ public class Message
     public String getText()
     {
         return text;
-    }
-
-    public String getDataOra()
-    {
-        return dataOra;
     }
 
     @Override

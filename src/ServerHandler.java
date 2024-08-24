@@ -9,7 +9,7 @@ public class ServerHandler extends Thread
     private final ServerSocket serverSocket;
     private final List<User> listClient;
     private final Scanner stdIn;
-    private PrintWriter out = new PrintWriter(System.out, true);;
+    private final PrintWriter out = new PrintWriter(System.out, true);;
 
     public ServerHandler(ServerSocket serverSocket, List<User> listClient)
     {
@@ -28,6 +28,7 @@ public class ServerHandler extends Thread
             {
                 if (userInput.startsWith("quit"))
                 {
+                    notifyUsers("#close",null);
                     stopServer();
                     break;
                 }
@@ -45,7 +46,9 @@ public class ServerHandler extends Thread
                     }
                     else
                     {
+                        notifyUsers("#session_start", topic);
                         sessioneInterattiva(topic);
+                        notifyUsers("#session_end", topic);
                     }
                 }
                 else
@@ -61,6 +64,23 @@ public class ServerHandler extends Thread
         finally
         {
             stdIn.close();
+        }
+    }
+
+    private void notifyUsers(String message, Topic topic) {
+        synchronized (listClient) {
+            for (User client : listClient) {
+                // Se il topic è null, notificare tutti i client
+                // Altrimenti, notificare solo i client iscritti al topic specificato
+                if (topic == null || client.getTopic().equals(topic)) {
+                    try {
+                        PrintWriter out = new PrintWriter(client.getClientSocket().getOutputStream(), true);
+                        out.println(message);
+                    } catch (IOException e) {
+                        System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
+                    }
+                }
+            }
         }
     }
 

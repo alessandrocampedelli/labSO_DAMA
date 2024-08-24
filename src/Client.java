@@ -36,10 +36,18 @@ public class Client
                     String response;
                     while (!socket.isClosed() && (response = in.readLine()) != null)
                     {
-                        //TODO: codice da completare da campe per chiusura corretta dei client
-                        if(response.equals("close")){
+                        //caso in cui il server avvisa che si sta disconnettendo
+                        if(response.equals("#close")){
                             System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
+                            break;
+                            //caso in cui il server avvisa che ha avviato una sessione interattiva
+                        }else if (response.equals("#session_start")) {
+                            System.out.println("ATTENZIONE: è stata avviata una sessione interattiva sul topic da parte del server\n");
+                            //caso in cui il server avvisa che ha terminato la sessione interattiva
+                        }else if (response.equals("#session_end")) {
+                            System.out.println("ATTENZIONE: il server ha interrotto la sessione interattiva sul topic\n");
                         }else{
+                            //caso di default quando il server inoltra un messaggio inviato sul topic ai subscriber di quel topic
                             System.out.println(response);
                             if(!in.ready())
                             {
@@ -54,6 +62,9 @@ public class Client
                     {
                         System.out.println("Errore durante la lettura dal server: " + e.getMessage());
                     }
+                }finally{
+                    //chiusura delle istanze del client
+                    System.exit(0);
                 }
             });
             //avvio il thread

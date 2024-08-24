@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Publisher extends User
 {
-    private List<Message> messaggiUtente = new ArrayList<>();
+    private final List<Message> messaggiUtente = new ArrayList<>();
 
     public Publisher(Socket socket, Topic topic)
     {
@@ -26,10 +26,14 @@ public class Publisher extends User
             Message message = new Message(messageText);
             if (currentTopic != null)
             {
-                currentTopic.addMessage(message);
-                //aggiunta del messaggio alla lista dei messaggi dell'utente
-                messaggiUtente.add(message);
-                out.println("Messaggio inviato.");
+                if(!message.getText().isEmpty()){
+                    currentTopic.addMessage(message);
+                    //aggiunta del messaggio alla lista dei messaggi dell'utente
+                    messaggiUtente.add(message);
+                    out.println("Messaggio inviato.");
+                }else{
+                    out.println("Errore: contenuto del messaggio non presente.");
+                }
             }
             else
             {
@@ -40,10 +44,14 @@ public class Publisher extends User
         {
             if (currentTopic != null)
             {
-                out.println("Messaggi inviati da te sul topic "+currentTopic.getName().toUpperCase());
-                for (Message message : messaggiUtente)
-                {
-                    out.println(message);
+                if(!messaggiUtente.isEmpty()){
+                    out.println("Messaggi inviati da te sul topic "+currentTopic.getName().toUpperCase());
+                    for (Message message : messaggiUtente)
+                    {
+                        out.println(message);
+                    }
+                }else{
+                    out.println("Non hai ancora inviato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                 }
             }
             else
