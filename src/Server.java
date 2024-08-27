@@ -72,20 +72,28 @@ public class Server
     //metodo che mostra la lista dei topic attualmente disponibili
     public static synchronized void showTopics(PrintWriter out)
     {
-        out.println("Topics:");
-        for (Topic topic : topics)
-        {
-            out.println("- " + topic.getName());
+        if(!topics.isEmpty()){
+            out.println("Topics:");
+            for (Topic topic : topics)
+            {
+                out.println("- " + topic.getName());
+            }
+        }else{
+            out.println("Non è presente alcun topic creato.");
         }
     }
 
     //metodo che mostra la lista dei topic attualmente disponibili
     public static synchronized void showTopics(PrintStream out)
     {
-        out.println("Topics:");
-        for (Topic topic : topics)
-        {
-            out.println("- " + topic.getName());
+        if(!topics.isEmpty()){
+            out.println("Topics:");
+            for (Topic topic : topics)
+            {
+                out.println("- " + topic.getName());
+            }
+        }else{
+            out.println("Non è presente alcun topic creato.");
         }
     }
 }

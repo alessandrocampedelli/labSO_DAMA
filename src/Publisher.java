@@ -16,7 +16,7 @@ public class Publisher extends User
     {
         if (inputLine.startsWith("publish "))
         {
-            String topicName = inputLine.split(" ")[1];
+            String topicName = inputLine.substring(8).trim();
             currentTopic = Server.getOrCreateTopic(topicName);
             out.println("Registrato come PUBLISHER per il topic " + topicName.toUpperCase());
         }
@@ -45,7 +45,7 @@ public class Publisher extends User
             if (currentTopic != null)
             {
                 if(!messaggiUtente.isEmpty()){
-                    out.println("Messaggi inviati da te sul topic "+currentTopic.getName().toUpperCase());
+                    out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio inviato": currentTopic.getMessages().size()+" messaggi inviati")+" da te sul topic "+currentTopic.getName().toUpperCase()+":");
                     for (Message message : messaggiUtente)
                     {
                         out.println(message);
@@ -64,7 +64,7 @@ public class Publisher extends User
             if (currentTopic != null)
             {
                 if(!currentTopic.getMessages().isEmpty()){
-                    out.println("Messaggi presenti sul topic "+currentTopic.getName().toUpperCase());
+                    out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio pubblicato": currentTopic.getMessages().size()+" messaggi pubblicati")+" sul topic "+currentTopic.getName().toUpperCase()+":");
                     for (Message message : currentTopic.getMessages())
                     {
                         out.println(message);
