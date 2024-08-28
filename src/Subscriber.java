@@ -20,7 +20,9 @@ public class Subscriber extends User
                 currentTopic.subscribe(this);
                 out.println("Registrazione avvenuta con successo come SUBSCRIBER per il topic " + topicName.toUpperCase()+".");
                 clientCreate = true;
-            }else{
+            }
+            else
+            {
                 out.println("ERRORE: non puoi effettuare una nuova registrazione a un diverso topic nella stessa esecuzione.");
             }
         }
@@ -34,7 +36,9 @@ public class Subscriber extends User
                         {
                             out.println(message);
                         }
-                    }else{
+                    }
+                    else
+                    {
                         out.println("Non è stato ancora pubblicato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                     }
                 }

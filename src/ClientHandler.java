@@ -38,7 +38,8 @@ public class ClientHandler extends Thread
                 //se l'utente non è già registrato, esso si deve registrare per forza prima di proseguire
                 while(client == null)
                 {
-                    try{
+                    try
+                    {
                         String inputLine = in.nextLine().toLowerCase();
                         if (inputLine.startsWith("publish "))
                         {
@@ -92,7 +93,9 @@ public class ClientHandler extends Thread
                         {
                             out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
                         }
-                    }catch(NoSuchElementException e){
+                    }
+                    catch(NoSuchElementException e)
+                    {
                         //eccezione gestita per quando un client scrive il comando quit ancora prima di scrivere publish o subscribe
                         return;
                     }

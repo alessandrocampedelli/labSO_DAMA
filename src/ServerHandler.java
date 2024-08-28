@@ -67,16 +67,23 @@ public class ServerHandler extends Thread
         }
     }
 
-    private void notifyUsers(String message, Topic topic) {
-        synchronized (listClient) {
-            for (User client : listClient) {
+    private void notifyUsers(String message, Topic topic)
+    {
+        synchronized (listClient)
+        {
+            for (User client : listClient)
+            {
                 // Se il topic è null, notificare tutti i client
                 // Altrimenti, notificare solo i client iscritti al topic specificato
-                if (topic == null || client.getTopic().equals(topic)) {
-                    try {
+                if (topic == null || client.getTopic().equals(topic))
+                {
+                    try
+                    {
                         PrintWriter out = new PrintWriter(client.getClientSocket().getOutputStream(), true);
                         out.println(message);
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e)
+                    {
                         System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
                     }
                 }
@@ -141,7 +148,7 @@ public class ServerHandler extends Thread
             while ((userInput = stdIn.nextLine()) != null)
             {
                 userInput = userInput.toLowerCase();
-                if (userInput.startsWith("listall"))
+                if (userInput.startsWith(":listall"))
                 {
                     if (topic.getMessages().isEmpty())
                     {
@@ -156,7 +163,7 @@ public class ServerHandler extends Thread
                         }
                     }
                 }
-                else if (userInput.startsWith("delete "))
+                else if (userInput.startsWith(":delete "))
                 {
                     boolean trovato=false;
                     String messageIdStr = userInput.split(" ", 2)[1].trim();
@@ -181,7 +188,7 @@ public class ServerHandler extends Thread
                         System.out.println("ERRORE: messaggio avente id "+"'"+messageId+"'"+" non trovato. Riprova.");
                     }
                 }
-                else if (userInput.startsWith("end"))
+                else if (userInput.startsWith(":end"))
                 {
                     notifyUsers("#session_end", topic);
                     this.processAllInspectMessage();
