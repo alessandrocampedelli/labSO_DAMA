@@ -26,7 +26,9 @@ public class Client
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
 
-            System.out.println("Connesso al server " + serverIp + ":" + serverPort);
+            System.out.println("\nBENVENUTO! Ti sei connesso con successo al server avente indirizzo IP " + serverIp + " e porta " + serverPort);
+            System.out.println("\nEcco i comandi da utilizzare in fase di registrazione:\n- show: \t\t\t\t\t\t  comando per vedere i topic già creati\n" +
+                    "- publish/subscribe <nome_topic>: comando per registrarti al server come publisher/subscriber\n");
 
             //thread per gestire la ricezione dei messaggi dal server
             Thread listenerThread = new Thread(() ->
@@ -70,7 +72,7 @@ public class Client
             //avvio il thread
             listenerThread.start();
             String userInput;
-            System.out.println("Inserisci publish o subscribe poi il nome del topic su cui vuoi operare");
+
             while ((userInput = stdIn.readLine()) != null)
             {
                 out.println(userInput);

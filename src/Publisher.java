@@ -14,11 +14,18 @@ public class Publisher extends User
     @Override
     public void handleCommand(String inputLine)
     {
+        inputLine = inputLine.toLowerCase();
         if (inputLine.startsWith("publish "))
         {
-            String topicName = inputLine.substring(8).trim();
-            currentTopic = Server.getOrCreateTopic(topicName);
-            out.println("Registrato come PUBLISHER per il topic " + topicName.toUpperCase());
+            //controllo che il client non si sia ancora mai registrato
+            if(!clientCreate){
+                String topicName = inputLine.substring(8).trim();
+                currentTopic = Server.getOrCreateTopic(topicName);
+                out.println("Registrazione avvenuta con successo come PUBLISHER per il topic " + topicName.toUpperCase()+".");
+                clientCreate = true;
+            }else{
+                out.println("ERRORE: non puoi effettuare una nuova registrazione a un diverso topic nella stessa esecuzione.");
+            }
         }
         else if (inputLine.startsWith("send "))
         {
@@ -30,7 +37,7 @@ public class Publisher extends User
                     currentTopic.addMessage(message);
                     //aggiunta del messaggio alla lista dei messaggi dell'utente
                     messaggiUtente.add(message);
-                    out.println("Messaggio inviato.");
+                    out.println("Messaggio inviato con successo.");
                 }else{
                     out.println("Errore: contenuto del messaggio non presente.");
                 }

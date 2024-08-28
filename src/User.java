@@ -12,6 +12,7 @@ public class User
     protected BufferedReader in;
     protected Topic currentTopic;
     protected LinkedList<String> inspectMessages;
+    protected boolean clientCreate;
 
     public User(Socket socket, Topic topic)
     {
@@ -46,6 +47,9 @@ public class User
 
     protected void processInspectMessages()
     {
+        if(!inspectMessages.isEmpty()){
+            out.println("Ecco le stampe relative"+(inspectMessages.size() == 1 ? " al comando inviato " : "ai "+inspectMessages.size()+" comandi inviati ")+"da te durante la fase di inspect");
+        }
         //finchè la lista di strighe non è vuota elaboro l'elemento in testa
         while(!inspectMessages.isEmpty())
         {

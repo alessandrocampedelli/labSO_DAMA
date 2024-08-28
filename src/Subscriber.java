@@ -10,13 +10,19 @@ public class Subscriber extends User
     @Override
     public void handleCommand(String inputLine)
     {
+        inputLine = inputLine.toLowerCase();
         if (inputLine.startsWith("subscribe "))
         {
-            String topicName = inputLine.substring(10).trim();
-            System.out.println("'"+topicName+"'");
-            currentTopic = Server.getOrCreateTopic(topicName);
-            currentTopic.subscribe(this);
-            out.println("Registrato come SUBSCRIBER per il topic " + topicName.toUpperCase());
+            //controllo che il client non si sia ancora mai registrato
+            if(!clientCreate){
+                String topicName = inputLine.substring(10).trim();
+                currentTopic = Server.getOrCreateTopic(topicName);
+                currentTopic.subscribe(this);
+                out.println("Registrazione avvenuta con successo come SUBSCRIBER per il topic " + topicName.toUpperCase()+".");
+                clientCreate = true;
+            }else{
+                out.println("ERRORE: non puoi effettuare una nuova registrazione a un diverso topic nella stessa esecuzione.");
+            }
         }
         else if (inputLine.equals("listall"))
         {

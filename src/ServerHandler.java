@@ -26,6 +26,7 @@ public class ServerHandler extends Thread
             String userInput;
             while ((userInput = stdIn.nextLine()) != null)
             {
+                userInput = userInput.toLowerCase();
                 if (userInput.startsWith("quit"))
                 {
                     notifyUsers("#close",null);
@@ -133,21 +134,22 @@ public class ServerHandler extends Thread
     private void sessioneInterattiva(Topic topic)
     {
         topic.setInInspection(true);
-        System.out.println("Sessione per il topic " + topic.getName().toUpperCase() + " iniziata");
+        System.out.println("Sessione interattiva per il topic " + topic.getName().toUpperCase() + " iniziata");
         try
         {
             String userInput;
             while ((userInput = stdIn.nextLine()) != null)
             {
+                userInput = userInput.toLowerCase();
                 if (userInput.startsWith("listall"))
                 {
                     if (topic.getMessages().isEmpty())
                     {
-                        System.out.println("Nel topic non è presente alcun messaggio");
+                        System.out.println("Nel topic "+topic.getName().toUpperCase()+" non è stato inviato alcun messaggio");
                     }
                     else
                     {
-                        System.out.println("Messaggi presenti all'interno del topic '" + topic.getName() + "':");
+                        System.out.println((topic.getMessages().size() == 1 ? "Un messaggio inviato ": topic.getMessages().size()+" messaggi inviati ")+"sul topic " + topic.getName().toUpperCase() + ":");
                         for (Message message : topic.getMessages())
                         {
                             System.out.println(message.toString()+"\n");
@@ -172,11 +174,11 @@ public class ServerHandler extends Thread
                     if(trovato)
                     {
                         topic.deleteMessage(messageId);
-                        System.out.println("Messaggio avente id "+"'"+messageId+"'"+" correttamente eliminato");
+                        System.out.println("Eliminazione messaggio avente id "+"'"+messageId+"'"+" avvenuta con successo.");
                     }
                     else
                     {
-                        System.out.println("Messaggio avente id "+"'"+messageId+"'"+" non trovato");
+                        System.out.println("ERRORE: messaggio avente id "+"'"+messageId+"'"+" non trovato. Riprova.");
                     }
                 }
                 else if (userInput.startsWith("end"))
@@ -184,7 +186,7 @@ public class ServerHandler extends Thread
                     notifyUsers("#session_end", topic);
                     this.processAllInspectMessage();
                     topic.setInInspection(false);
-                    System.out.println("Sessione topic chiusa");
+                    System.out.println("Sessione interattiva per il topic "+topic.getName().toUpperCase()+" chiusa");
                     break;
                 }
                 else

@@ -13,7 +13,7 @@ public class ClientHandler extends Thread
     //variabile booleana per sapere se il client è in esecuzione oppure no
     private volatile boolean running = true;
     private Scanner in;
-    private PrintStream out;
+    private PrintWriter out;
 
     public ClientHandler(Socket socket, List<User> listClient)
     {
@@ -30,7 +30,7 @@ public class ClientHandler extends Thread
             InputStream inputStream = clientSocket.getInputStream();
             OutputStream outputStream = clientSocket.getOutputStream();
             in = new Scanner(inputStream);
-            out = new PrintStream(outputStream, true);
+            out = new PrintWriter(outputStream, true);
 
             //verifica se l'utente è già registrato (si è dichiarato publish o subscribe)
             if (client == null)
@@ -39,7 +39,7 @@ public class ClientHandler extends Thread
                 while(client == null)
                 {
                     try{
-                        String inputLine = in.nextLine();
+                        String inputLine = in.nextLine().toLowerCase();
                         if (inputLine.startsWith("publish "))
                         {
                             String topicName = inputLine.substring(8).trim();
