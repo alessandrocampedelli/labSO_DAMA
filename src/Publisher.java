@@ -18,12 +18,15 @@ public class Publisher extends User
         if (inputLine.startsWith("publish "))
         {
             //controllo che il client non si sia ancora mai registrato
-            if(!clientCreate){
+            if(!clientCreate)
+            {
                 String topicName = inputLine.substring(8).trim();
                 currentTopic = Server.getOrCreateTopic(topicName);
                 out.println("Registrazione avvenuta con successo come PUBLISHER per il topic " + topicName.toUpperCase()+".");
                 clientCreate = true;
-            }else{
+            }
+            else
+            {
                 out.println("ERRORE: non puoi effettuare una nuova registrazione a un diverso topic nella stessa esecuzione.");
             }
         }
@@ -38,7 +41,9 @@ public class Publisher extends User
                     //aggiunta del messaggio alla lista dei messaggi dell'utente
                     messaggiUtente.add(message);
                     out.println("Messaggio inviato con successo.");
-                }else{
+                }
+                else
+                {
                     out.println("Errore: contenuto del messaggio non presente.");
                 }
             }
@@ -57,7 +62,9 @@ public class Publisher extends User
                     {
                         out.println(message);
                     }
-                }else{
+                }
+                else
+                {
                     out.println("Non hai ancora inviato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                 }
             }
@@ -76,7 +83,9 @@ public class Publisher extends User
                     {
                         out.println(message);
                     }
-                }else{
+                }
+                else
+                {
                     out.println("Non è stato ancora pubblicato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                 }
             }

@@ -4,7 +4,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.PrintWriter;
-import java.io.PrintStream;
 
 public class Server
 {
@@ -72,13 +71,16 @@ public class Server
     //metodo che mostra la lista dei topic attualmente disponibili
     public static synchronized void showTopics(PrintWriter out)
     {
-        if(!topics.isEmpty()){
+        if(!topics.isEmpty())
+        {
             out.println(topics.size() == 1 ? ("Un solo topic creato al momento: ") : (topics.size()+" topics creati al momento: "));
             for (Topic topic : topics)
             {
                 out.println("- " + topic.getName());
             }
-        }else{
+        }
+        else
+        {
             out.println("Non è presente alcun topic creato.");
         }
     }
