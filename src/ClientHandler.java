@@ -80,6 +80,7 @@ public class ClientHandler extends Thread
                                 out.println("Errore: il topic non è specificato. Riprova");
                             }
                         }
+                        //else necessari per permettere anche quando il client non si ancora registrato di poter comunque usare i comandi show e quit
                         else if(inputLine.equals("show"))
                         {
                             Server.showTopics(out);
@@ -111,7 +112,8 @@ public class ClientHandler extends Thread
                     client.handleCommand("inspect");
                     client.addInspectMessage(inputLine);
                 }
-                if (inputLine.equals("quit"))
+
+                if (inputLine.equals("quit") && !client.getTopic().isInInspection())
                 {
                     System.out.println("Client disconnesso");
                     break;
@@ -128,7 +130,10 @@ public class ClientHandler extends Thread
         }
         finally
         {
-            stopClient();
+            if(!client.getTopic().isInInspection()){
+                System.out.println("sono qui");
+                stopClient();
+            }
         }
     }
 
@@ -150,5 +155,8 @@ public class ClientHandler extends Thread
         {
             e.printStackTrace();
         }
+    }
+    public boolean getIsInIspection(){
+        return this.client == null || this.client.getTopic().isInInspection();
     }
 }
