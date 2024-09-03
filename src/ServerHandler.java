@@ -7,11 +7,11 @@ import java.util.Scanner;
 public class ServerHandler extends Thread
 {
     private final ServerSocket serverSocket;
-    private final List<User> listClient;
+    private final List<ClientHandler> listClient;
     private final Scanner stdIn;
     private final PrintWriter out = new PrintWriter(System.out, true);;
 
-    public ServerHandler(ServerSocket serverSocket, List<User> listClient)
+    public ServerHandler(ServerSocket serverSocket, List<ClientHandler> listClient)
     {
         this.serverSocket = serverSocket;
         this.listClient = listClient;
@@ -29,7 +29,8 @@ public class ServerHandler extends Thread
                 userInput = userInput.toLowerCase();
                 if (userInput.startsWith("quit"))
                 {
-                    notifyUsers("#close",null);
+
+                    notifyUsers("#close", null);
                     stopServer();
                     break;
                 }
@@ -60,6 +61,7 @@ public class ServerHandler extends Thread
         catch (Exception e)
         {
             System.err.println("Errore durante l'esecuzione del server: " + e.getMessage());
+            e.printStackTrace();
         }
         finally
         {
@@ -71,15 +73,15 @@ public class ServerHandler extends Thread
     {
         synchronized (listClient)
         {
-            for (User client : listClient)
+            for (ClientHandler client : listClient)
             {
                 // Se il topic è null, notificare tutti i client
                 // Altrimenti, notificare solo i client iscritti al topic specificato
-                if (topic == null || client.getTopic().equals(topic))
+                if (topic == null || client.getClient().getTopic().equals(topic))
                 {
                     try
                     {
-                        PrintWriter out = new PrintWriter(client.getClientSocket().getOutputStream(), true);
+                        PrintWriter out = new PrintWriter(client.getClient().getClientSocket().getOutputStream(), true);
                         out.println(message);
                     }
                     catch (IOException e)
@@ -95,11 +97,11 @@ public class ServerHandler extends Thread
     {
         synchronized (listClient)
         {
-            for (User client : listClient)
+            for (ClientHandler client : listClient)
             {
                 try
                 {
-                    client.getClientSocket().close();
+                    client.getClient().getClientSocket().close();
                 }
                 catch (IOException e)
                 {
@@ -210,9 +212,9 @@ public class ServerHandler extends Thread
 
     private void processAllInspectMessage()
     {
-        for (User client : listClient)
+        for (ClientHandler client : listClient)
         {
-            client.processInspectMessages();
+            client.getClient().processInspectMessages();
         }
     }
 }

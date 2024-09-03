@@ -9,13 +9,13 @@ public class ClientHandler extends Thread
 {
     private final Socket clientSocket;
     private User client;
-    private List<User> listClient;
+    private List<ClientHandler> listClient;
     //variabile booleana per sapere se il client è in esecuzione oppure no
     private volatile boolean running = true;
     private Scanner in;
     private PrintWriter out;
 
-    public ClientHandler(Socket socket, List<User> listClient)
+    public ClientHandler(Socket socket, List<ClientHandler> listClient)
     {
         this.clientSocket = socket;
         this.listClient = listClient;
@@ -49,10 +49,6 @@ public class ClientHandler extends Thread
                                 client = new Publisher(clientSocket,Server.getOrCreateTopic(topicName));
                                 client.registerOutputAndInput();
                                 client.handleCommand(inputLine);
-                                synchronized (listClient)
-                                {
-                                    listClient.add(client);
-                                }
                                 //stampa il messaggio sulla console del server
                                 System.out.println("Un nuovo client si è connesso come PUBLISHER al topic " + topicName.toUpperCase());
                             }
@@ -69,10 +65,7 @@ public class ClientHandler extends Thread
                                 client = new Subscriber(clientSocket,Server.getOrCreateTopic(topicName));
                                 client.registerOutputAndInput();
                                 client.handleCommand(inputLine);
-                                synchronized (listClient)
-                                {
-                                    listClient.add(client);
-                                }
+
                                 //stampa il messaggio sulla console del server
                                 System.out.println("Un nuovo client si è connesso come SUBSCRIBER al topic " + topicName.toUpperCase());
                             }
@@ -112,8 +105,12 @@ public class ClientHandler extends Thread
                 }
                 else
                 {
-                    client.handleCommand("inspect");
-                    client.addInspectMessage(inputLine);
+                    if(!inputLine.equals("quit")) {
+                        client.handleCommand("inspect");
+                        client.addInspectMessage(inputLine);
+                    }else{
+                        out.println("Il comando quit non si può utilizzare durante l'inspect...");
+                    }
                 }
 
                 if (inputLine.equals("quit") && !client.getTopic().isInInspection())
@@ -146,7 +143,7 @@ public class ClientHandler extends Thread
         {
             synchronized (listClient)
             {
-                listClient.removeIf(user -> user.getClientSocket().equals(clientSocket));
+                listClient.removeIf(ClientHandler -> ClientHandler.getClient().getClientSocket().equals(clientSocket));
             }
             if (!clientSocket.isClosed())
             {
@@ -157,6 +154,9 @@ public class ClientHandler extends Thread
         {
             e.printStackTrace();
         }
+    }
+    public User getClient(){
+        return this.client;
     }
     public boolean getIsInIspection(){
         return this.client == null || this.client.getTopic().isInInspection();

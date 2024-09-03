@@ -20,7 +20,7 @@ public class Server
         */
 
         int port = DEFAULT_PORT;
-        List<User> listClient = new ArrayList<>();
+        List<ClientHandler> listClient = new ArrayList<>();
         
         try
         {
@@ -34,7 +34,13 @@ public class Server
                 try
                 {
                     Socket clientSocket = serverSocket.accept();
-                    new ClientHandler(clientSocket, listClient).start();
+                    ClientHandler client = new ClientHandler(clientSocket, listClient);
+                    client.start();
+                    synchronized (listClient)
+                    {
+                        listClient.add(client);
+                    }
+
                 }
                 catch (IOException e)
                 {

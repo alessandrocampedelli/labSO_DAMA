@@ -84,25 +84,6 @@ public class Client
             while ((userInput = stdIn.readLine()) != null)
             {
                 out.println(userInput);
-                /*
-                TODO:
-                    Il problema relativo al comando quit che eseguito durante la fase di inspect si verifica qui. Infatti, come per tutti gli altri comandi, anche il comando quit
-                    viene inserito correttamente in coda alla lista dei messsagi "inspectati" di un client ma a causa dell'esecuzione dell'if sottostante l'istanza del client viene arrestata.
-                    Per risolvere il problema ci sono due strade:
-                    1) Cercare di aggiungere una condizione simile a quella che vedete commentata: l'obiettivo è quello di far eseguire l'if solo quando entrambe le condizioni siano vere ovvero
-                        il comando scritto è "quit" e non è attiva la fase di inspect. Tuttavia questa soluzione l'ho già sperimentata e al momento non funziona. Il metodo getIsInIspection della
-                        classe ClientHandler, per poter essere visibile nella classe Client, deve essere static; ciò comporta che anche l'attributo client della classe ClientHandler debba esssere
-                        static e questo poi comporta dei problemi nell'esecuzione.
-                     2) Far eseguire sempre l'if sottostante quando viene scritto "quit", in questo caso però prima di eventualmente interrompere l'esecuzione del client inoltra una richiesta al server per informarlo sullo stato
-                        della sessione interattiva. Il client attenderà la risposta del server e a seconda di cosa risponde il client verrà interrotto oppure no.
-
-                */
-
-                if ("quit".equalsIgnoreCase(userInput) /*&& !ClientHandler.getIsInIspection()*/)
-                {
-                    //il programma esce dal ciclo se l'utente inserisce il comando 'quit'
-                    break;
-                }
             }
             // Chiudi il socket e interrompi il thread listener
             socket.close();

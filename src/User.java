@@ -42,7 +42,9 @@ public class User
     //inserisco in coda il messaggio da elaborare
     protected void addInspectMessage(String m)
     {
-        this.inspectMessages.add(m);
+
+            this.inspectMessages.add(m);
+
     }
 
     protected void processInspectMessages()
@@ -55,6 +57,9 @@ public class User
         {
             this.handleCommand(inspectMessages.removeFirst());
         }
+    }
+    public void setTopic(Topic topic){
+        this.currentTopic = topic;
     }
 
     protected void registerOutputAndInput() throws IOException
