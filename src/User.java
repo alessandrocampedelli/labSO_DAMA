@@ -53,8 +53,7 @@ public class User
         //finchè la lista di strighe non è vuota elaboro l'elemento in testa
         while(!inspectMessages.isEmpty())
         {
-            this.handleCommand(inspectMessages.getFirst());
-            this.inspectMessages.removeFirst();
+            this.handleCommand(inspectMessages.removeFirst());
         }
     }
 
