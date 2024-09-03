@@ -134,7 +134,6 @@ public class ClientHandler extends Thread
         finally
         {
             if(!client.getTopic().isInInspection()){
-                System.out.println("sono qui");
                 stopClient();
             }
         }
