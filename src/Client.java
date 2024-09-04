@@ -85,8 +85,6 @@ public class Client
             {
                 out.println(userInput);
             }
-            // Chiudi il socket e interrompi il thread listener
-            socket.close();
             listenerThread.join(); // Aspetta che il thread finisca
         }
         catch (IOException | InterruptedException e)
