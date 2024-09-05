@@ -68,7 +68,7 @@ public class Client
                 {
                     if (!socket.isClosed())
                     {
-                        System.out.println("Errore durante la lettura dal server: " + e.getMessage());
+                        System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
                     }
                 }
                 finally

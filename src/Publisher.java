@@ -57,7 +57,7 @@ public class Publisher extends User
             if (currentTopic != null)
             {
                 if(!messaggiUtente.isEmpty()){
-                    out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio inviato": currentTopic.getMessages().size()+" messaggi inviati")+" da te sul topic "+currentTopic.getName().toUpperCase()+":");
+                    out.println((this.messaggiUtente.size() == 1 ? "Un messaggio inviato": this.messaggiUtente.size()+" messaggi inviati")+" da te sul topic "+currentTopic.getName().toUpperCase()+":");
                     for (Message message : messaggiUtente)
                     {
                         out.println(message);

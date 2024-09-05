@@ -52,6 +52,7 @@ public class Server
                     break;
                 }
             }
+            System.exit(0);
         }
         catch (IOException e)
         {

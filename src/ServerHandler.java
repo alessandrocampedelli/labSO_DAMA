@@ -75,6 +75,11 @@ public class ServerHandler extends Thread
         {
             for (ClientHandler client : listClient)
             {
+                //caso in cui il server si sia attivo ma non si sia ancora registrato come publisher o subscriber
+                //in questo caso salto tutte le operazioni di chiusura
+                if(client.getClient() == null){
+                    continue;
+                }
                 // Se il topic è null, notificare tutti i client
                 // Altrimenti, notificare solo i client iscritti al topic specificato
                 if (topic == null || client.getClient().getTopic().equals(topic))
@@ -97,8 +102,14 @@ public class ServerHandler extends Thread
     {
         synchronized (listClient)
         {
+
             for (ClientHandler client : listClient)
             {
+                //caso in cui il server si sia attivo ma non si sia ancora registrato come publisher o subscriber
+                //in questo caso salto tutte le operazioni di chiusura
+                if(client.getClient() == null){
+                    continue;
+                }
                 try
                 {
                     client.getClient().getClientSocket().close();
