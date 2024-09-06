@@ -73,7 +73,11 @@ public class Client
                 }
                 finally
                 {
-                    //chiusura delle istanze del client
+                    //TODO
+                    // questo comando attualmente non possiamo toglierlo dal momento che se il client è registrato come publisher o subscriber e in quel momento
+                    // il server scrive quit, tutti i client collegati visualizzeranno la stampa di chiusura del server ma non chiuderanno la loro istanza. trovare
+                    // un modo 'pulito' per chiudere l'istanza dei client senza usare l'esplicito comando.
+
                     System.exit(0);
                 }
             });

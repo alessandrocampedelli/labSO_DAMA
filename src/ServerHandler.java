@@ -29,7 +29,6 @@ public class ServerHandler extends Thread
                 userInput = userInput.toLowerCase();
                 if (userInput.startsWith("quit"))
                 {
-
                     notifyUsers("#close", null);
                     stopServer();
                     break;
@@ -98,8 +97,7 @@ public class ServerHandler extends Thread
         }
     }
 
-    private void stopServer()
-    {
+    private void stopServer() throws IOException {
         synchronized (listClient)
         {
 

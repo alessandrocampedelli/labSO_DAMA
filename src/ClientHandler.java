@@ -82,6 +82,7 @@ public class ClientHandler extends Thread
                         else if(inputLine.equals("quit"))
                         {
                             out.println("Disconnessione in corso...");
+                            break;
                         }
                         else
                         {
@@ -95,29 +96,35 @@ public class ClientHandler extends Thread
                     }
                 }
             }
-            // Ciclo per gestire ulteriori comandi
-            while (running && in.hasNextLine())
-            {
-                String inputLine = in.nextLine();
-                if (!client.getTopic().isInInspection())
+            if(this.getClient() != null){
+                // Ciclo per gestire ulteriori comandi
+                while (running && in.hasNextLine())
                 {
-                    client.handleCommand(inputLine);
-                }
-                else
-                {
-                    if(!inputLine.equals("quit")) {
-                        client.handleCommand("inspect");
-                        client.addInspectMessage(inputLine);
-                    }else{
-                        out.println("Il comando quit non si può utilizzare durante l'inspect...");
+                    String inputLine = in.nextLine();
+                    if (!client.getTopic().isInInspection())
+                    {
+                        client.handleCommand(inputLine);
+                    }
+                    else
+                    {
+                        if(!inputLine.equals("quit")) {
+                            client.handleCommand("inspect");
+                            client.addInspectMessage(inputLine);
+                        }else{
+                            out.println("Il comando quit non si può utilizzare durante l'inspect...");
+                        }
+                    }
+
+                    if (inputLine.equals("quit") && !client.getTopic().isInInspection())
+                    {
+                        System.out.println("Client disconnesso");
+                        break;
                     }
                 }
-
-                if (inputLine.equals("quit") && !client.getTopic().isInInspection())
-                {
-                    System.out.println("Client disconnesso");
-                    break;
-                }
+            }else{
+                //non stampo sul server il fatto che il client si sia collegato, in quanto esso
+                //si era ancora registrato come publisher o subscriber
+                clientSocket.close();
             }
         }
         catch (SocketException e)
@@ -130,7 +137,7 @@ public class ClientHandler extends Thread
         }
         finally
         {
-            if(!client.getTopic().isInInspection()){
+            if(client != null && !client.getTopic().isInInspection()){
                 stopClient();
             }
         }
@@ -157,8 +164,5 @@ public class ClientHandler extends Thread
     }
     public User getClient(){
         return this.client;
-    }
-    public boolean getIsInIspection(){
-        return this.client == null || this.client.getTopic().isInInspection();
     }
 }
