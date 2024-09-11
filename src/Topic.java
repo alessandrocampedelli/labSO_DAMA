@@ -3,11 +3,16 @@ import java.util.List;
 
 public class Topic
 {
-    private final String name;
+    //il nome del topic
+    private final String name; // nome del topic
+    //la lista dei messaggi pubblicati sul topic
     private final List<Message> messages = new ArrayList<>();
+    //la lista dei subscriber iscritti al topic
     private final List<Subscriber> subscribers = new ArrayList<>();
-    private boolean inInspection = false; // Flag per indicare se il topic è in ispezione
+    //flag per indicare se il topic è in ispezione
+    private boolean inInspection = false;
 
+    //metodo costruttore che inizializza il nome del topic
     public Topic(String name)
     {
         this.name = name;
@@ -18,45 +23,50 @@ public class Topic
         return name;
     }
 
+    //metodo che restituisce lo stato del flag di ispezione
     public boolean isInInspection()
     {
         return inInspection;
     }
 
+    //metodo che imposta lo stato del flag di ispezione
     public void setInInspection(boolean inInspection)
     {
         this.inInspection = inInspection;
     }
 
-    // Aggiunge un messaggio al topic e notifica tutti i subscriber
+    //metodo che aggiunge un messaggio al topic e notifica tutti i subscriber
     public synchronized void addMessage(Message message)
     {
+        //aggiunge il messaggio alla lista dei messaggi
         messages.add(message);
+        //notifica tutti i subscriber connessi del nuovo messaggio
         notifySubscribers(message);
     }
 
-    // Restituisce tutti i messaggi del topic
+    //metodo che restituisce tutti i messaggi del topic
     public synchronized List<Message> getMessages()
     {
         return new ArrayList<>(messages);
     }
 
-    // Aggiunge un subscriber alla lista dei subscriber
+    //metodo che aggiunge un subscriber alla lista dei subscriber
     public synchronized void subscribe(Subscriber client)
     {
         subscribers.add(client);
     }
 
-    // Notifica tutti i subscriber con un nuovo messaggio
+    //metodo che notifica tutti i subscriber con un nuovo messaggio
     private void notifySubscribers(Message message)
     {
         for (Subscriber client : subscribers)
         {
+            //invia il messaggio a ciascun subscriber connesso
             client.sendMessage(message);
         }
     }
 
-    // Elimina un messaggio dal topic dato il suo ID
+    //metodo che rimuove un messaggio dal topic dato il suo ID
     public synchronized void deleteMessage(int id)
     {
         messages.removeIf(message -> message.getId() == id);
