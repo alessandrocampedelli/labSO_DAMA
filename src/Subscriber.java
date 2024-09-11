@@ -30,7 +30,8 @@ public class Subscriber extends User
         {
                 if (currentTopic != null)
                 {
-                    if(!currentTopic.getMessages().isEmpty()){
+                    if(!currentTopic.getMessages().isEmpty())
+                    {
                         out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio pubblicato": currentTopic.getMessages().size()+" messaggi pubblicati")+" sul topic "+currentTopic.getName().toUpperCase()+":");
                         for (Message message : currentTopic.getMessages())
                         {

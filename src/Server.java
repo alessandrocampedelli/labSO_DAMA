@@ -40,7 +40,6 @@ public class Server
                     {
                         listClient.add(client);
                     }
-
                 }
                 catch (IOException e)
                 {
@@ -52,6 +51,7 @@ public class Server
                     break;
                 }
             }
+            //chiusura del server
             System.exit(0);
         }
         catch (IOException e)

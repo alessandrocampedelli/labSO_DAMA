@@ -76,7 +76,8 @@ public class ServerHandler extends Thread
             {
                 //caso in cui il server si sia attivo ma non si sia ancora registrato come publisher o subscriber
                 //in questo caso salto tutte le operazioni di chiusura
-                if(client.getClient() == null){
+                if(client.getClient() == null)
+                {
                     continue;
                 }
                 // Se il topic è null, notificare tutti i client
@@ -97,15 +98,16 @@ public class ServerHandler extends Thread
         }
     }
 
-    private void stopServer() throws IOException {
+    private void stopServer() throws IOException
+    {
         synchronized (listClient)
         {
-
             for (ClientHandler client : listClient)
             {
                 //caso in cui il server si sia attivo ma non si sia ancora registrato come publisher o subscriber
                 //in questo caso salto tutte le operazioni di chiusura
-                if(client.getClient() == null){
+                if(client.getClient() == null)
+                {
                     continue;
                 }
                 try

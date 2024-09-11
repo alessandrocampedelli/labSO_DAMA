@@ -22,8 +22,11 @@ public class Client
         int serverPort = DEFAULT_SERVER_PORT;
 
         try (Socket socket = new Socket(serverIp, serverPort);
+             //oggetto di tipo "PrintWriter" per inviare i dati al server
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             //oggetto di tipo "BufferedReader" per ricevere dati dal server
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             //oggetto di tipo "BufferedReader" per leggere input dell'utente da tastiera
              BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
 
             System.out.println("\nBENVENUTO! Ti sei connesso con successo al server avente indirizzo IP " + serverIp + " e porta " + serverPort);
@@ -36,26 +39,27 @@ public class Client
                 try
                 {
                     String response;
+                    //ciclo per continuare a ricevere messaggi finché la socket non è chiusa
                     while (!socket.isClosed() && (response = in.readLine()) != null)
                     {
                         //caso in cui il server avvisa che si sta disconnettendo
                         if(response.equals("#close")){
                             System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
                             break;
-                            //caso in cui il server avvisa che ha avviato una sessione interattiva
                         }
+                        //caso in cui il server avvisa che ha avviato una sessione interattiva
                         else if (response.equals("#session_start"))
                         {
                             System.out.println("ATTENZIONE: è stata avviata una sessione interattiva sul topic da parte del server\n");
-                            //caso in cui il server avvisa che ha terminato la sessione interattiva
                         }
+                        //caso in cui il server avvisa che ha terminato la sessione interattiva
                         else if (response.equals("#session_end"))
                         {
                             System.out.println("ATTENZIONE: il server ha interrotto la sessione interattiva sul topic\n");
                         }
+                        //caso di default quando il server inoltra un messaggio inviato sul topic ai subscriber di quel topic
                         else
                         {
-                            //caso di default quando il server inoltra un messaggio inviato sul topic ai subscriber di quel topic
                             System.out.println(response);
                             if(!in.ready())
                             {
@@ -66,6 +70,7 @@ public class Client
                 }
                 catch (IOException e)
                 {
+                    //gestione delle eccezioni in caso di disconnessione del server
                     if (!socket.isClosed())
                     {
                         System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
@@ -73,23 +78,20 @@ public class Client
                 }
                 finally
                 {
-                    //TODO
-                    // questo comando attualmente non possiamo toglierlo dal momento che se il client è registrato come publisher o subscriber e in quel momento
-                    // il server scrive quit, tutti i client collegati visualizzeranno la stampa di chiusura del server ma non chiuderanno la loro istanza. trovare
-                    // un modo 'pulito' per chiudere l'istanza dei client senza usare l'esplicito comando.
-
+                    //uscita dall'applicazione quando il thread termina
                     System.exit(0);
                 }
             });
-            //avvio il thread
+            //avvio del thread
             listenerThread.start();
             String userInput;
-
+            //ciclo per leggere l'input dell'utente da tastiera e inviarlo al server
             while ((userInput = stdIn.readLine()) != null)
             {
                 out.println(userInput);
             }
-            listenerThread.join(); // Aspetta che il thread finisca
+            //aspetta che il thread finisca
+            listenerThread.join();
         }
         catch (IOException | InterruptedException e)
         {

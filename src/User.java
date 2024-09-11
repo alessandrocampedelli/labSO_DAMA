@@ -42,14 +42,13 @@ public class User
     //inserisco in coda il messaggio da elaborare
     protected void addInspectMessage(String m)
     {
-
             this.inspectMessages.add(m);
-
     }
 
     protected void processInspectMessages()
     {
-        if(!inspectMessages.isEmpty()){
+        if(!inspectMessages.isEmpty())
+        {
             out.println("Ecco le stampe relative "+(inspectMessages.size() == 1 ? " al comando inviato " : "ai "+inspectMessages.size()+" comandi inviati ")+"da te durante la fase di inspect");
         }
         //finchè la lista di strighe non è vuota elaboro l'elemento in testa
@@ -57,9 +56,6 @@ public class User
         {
             this.handleCommand(inspectMessages.removeFirst());
         }
-    }
-    public void setTopic(Topic topic){
-        this.currentTopic = topic;
     }
 
     protected void registerOutputAndInput() throws IOException

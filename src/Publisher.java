@@ -4,23 +4,31 @@ import java.util.List;
 
 public class Publisher extends User
 {
+    //lista per memorizzare i messaggi inviati dal publisher
     private final List<Message> messaggiUtente = new ArrayList<>();
 
+    //metodo costruttore che inizializza la socket e il topic
     public Publisher(Socket socket, Topic topic)
     {
         super(socket, topic);
     }
 
+    //metodo per gestire i comandi ricevuti dal client
     @Override
     public void handleCommand(String inputLine)
     {
+        //conversione del comando in minuscolo per uniformità
         inputLine = inputLine.toLowerCase();
+
+        //gestione del comando "publish" per registrarsi ad un topic
         if (inputLine.startsWith("publish "))
         {
-            //controllo che il client non si sia ancora mai registrato
+            //controllo se il client non è già registrato al topic
             if(!clientCreate)
             {
+                //estrazione del nome del topic dal comando
                 String topicName = inputLine.substring(8).trim();
+                //recupero il topic se è già esistente altrimenti lo creo
                 currentTopic = Server.getOrCreateTopic(topicName);
                 out.println("Registrazione avvenuta con successo come PUBLISHER per il topic " + topicName.toUpperCase()+".");
                 clientCreate = true;
@@ -30,15 +38,21 @@ public class Publisher extends User
                 out.println("ERRORE: non puoi effettuare una nuova registrazione a un diverso topic nella stessa esecuzione.");
             }
         }
+        //gestione del comando "send" per inviare un messaggio
         else if (inputLine.startsWith("send "))
         {
+            //estrazione del testo del messaggio dal comando
             String messageText = inputLine.substring(5);
             Message message = new Message(messageText);
+
             if (currentTopic != null)
             {
-                if(!message.getText().isEmpty()){
+                //verifica che il messaggio non sia vuoto
+                if(!message.getText().isEmpty())
+                {
+                    //aggiungo il messaggio appena scritto al topic
                     currentTopic.addMessage(message);
-                    //aggiunta del messaggio alla lista dei messaggi dell'utente
+                    //aggiungi il messaggio appena scritto alla lista dei messaggi dell'utente
                     messaggiUtente.add(message);
                     out.println("Messaggio inviato con successo.");
                 }
@@ -52,11 +66,16 @@ public class Publisher extends User
                 out.println("Prima di inviare un messaggio devi prima specificare il topic.");
             }
         }
+        //gestione del comando "list" per mostrare i messaggi inviati da questo client
         else if (inputLine.equals("list"))
         {
+            //controllo se il publisher è registrato ad un topic
             if (currentTopic != null)
             {
-                if(!messaggiUtente.isEmpty()){
+                //verifica se l'utente ha inviato almeno un messaggio
+                if(!messaggiUtente.isEmpty())
+                {
+                    //visualizzazione della lista dei messaggi inviati dall'utente sul topic corrente
                     out.println((this.messaggiUtente.size() == 1 ? "Un messaggio inviato": this.messaggiUtente.size()+" messaggi inviati")+" da te sul topic "+currentTopic.getName().toUpperCase()+":");
                     for (Message message : messaggiUtente)
                     {
@@ -73,11 +92,16 @@ public class Publisher extends User
                 out.println("Per poter riceve la lista dei tuoi messaggi inviati devi prima iscriverti a un topic.");
             }
         }
+        //gestione del comando "listall" per mostrare tutti i messaggi pubblicati sul topic da tutti i client
         else if (inputLine.equals("listall"))
         {
+            //controllo se il publisher è registrato a un topic
             if (currentTopic != null)
             {
-                if(!currentTopic.getMessages().isEmpty()){
+                //verifica se ci sono messaggi pubblicati sul topic
+                if(!currentTopic.getMessages().isEmpty())
+                {
+                    //visualizzazione della lista di tutti i messaggi pubblicati sul topic
                     out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio pubblicato": currentTopic.getMessages().size()+" messaggi pubblicati")+" sul topic "+currentTopic.getName().toUpperCase()+":");
                     for (Message message : currentTopic.getMessages())
                     {
@@ -94,14 +118,17 @@ public class Publisher extends User
                 out.println("Non sei iscritto o non stai pubblicando su alcun topic.");
             }
         }
+        //gestione del comando "show" per mostrare tutti i topic disponibili a cui è possibile collegarsi
         else if (inputLine.equals("show"))
         {
             Server.showTopics(out);
         }
+        //gestione del comando "quit" per disconnettersi
         else if (inputLine.equals("quit"))
         {
             out.println("Disconnessione in corso...");
         }
+        //gestione del comando "inspect" per avvisare l'utente che il topic è in ispezione
         else if (inputLine.equals("inspect"))
         {
             out.println("Il topic è in ispezione. Il messaggio verrà elaborato dal server una volta terminata la fase di ispezione");
