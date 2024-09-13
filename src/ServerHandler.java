@@ -4,23 +4,21 @@ import java.net.ServerSocket;
 import java.util.List;
 import java.util.Scanner;
 
-//DA CONTROLLARE COMMENTI GENERATI!!
-
-// Classe che gestisce le operazioni del server in esecuzione.
-// Estende Thread per permettere l'esecuzione concorrente del server.
 public class ServerHandler extends Thread
 {
-    private final ServerSocket serverSocket; // Socket del server per accettare connessioni dai client
-    private final List<ClientHandler> listClient; // Lista dei client connessi al server
-    private final Scanner stdIn; // Scanner per leggere l'input dell'utente dal terminale
-    private final PrintWriter out = new PrintWriter(System.out, true); // Writer per stampare messaggi nel terminale
+    //socket del server per accettare connessioni dai client
+    private final ServerSocket serverSocket;
+    //lista dei client connessi al server
+    private final List<ClientHandler> listClient;
+    private final Scanner stdIn;
+    private final PrintWriter out = new PrintWriter(System.out, true);
 
-    // Costruttore della classe. Inizializza il ServerSocket e la lista dei ClientHandler.
+    //metodo costruttore che inizializza la socket del sever, la lista dei ClientHandler e lo scanner
     public ServerHandler(ServerSocket serverSocket, List<ClientHandler> listClient)
     {
         this.serverSocket = serverSocket;
         this.listClient = listClient;
-        this.stdIn = new Scanner(System.in); // Inizializza lo Scanner per leggere l'input dal terminale
+        this.stdIn = new Scanner(System.in);
     }
 
     @Override
@@ -29,36 +27,40 @@ public class ServerHandler extends Thread
         try
         {
             String userInput;
-            // Ciclo principale per leggere l'input dell'utente e gestire i comandi
+            //ciclo principale per leggere l'input dell'utente
             while ((userInput = stdIn.nextLine()) != null)
             {
-                userInput = userInput.toLowerCase(); // Converti l'input in minuscolo per una gestione uniforme dei comandi
+                //conversione del comando in minuscolo per uniformità
+                userInput = userInput.toLowerCase();
                 if (userInput.startsWith("quit"))
                 {
-                    // Comando per terminare il server. Notifica tutti i client e chiude il server.
+                    //metodo per far terminare l'esecuzione del server e notifichiamo tutti i client dell'accaduto
                     notifyUsers("#close", null);
                     stopServer();
-                    break; // Esci dal ciclo e termina il thread
+                    break;
                 }
+                //gestione del comando "show" per mostrare tutti i topic disponibili a cui è possibile collegarsi
                 else if (userInput.startsWith("show"))
                 {
-                    // Comando per mostrare i topic disponibili
                     Server.showTopics(out);
                 }
+                //gestione del comando "inspect" per avviare una sessione interattiva su un topic specificato
                 else if (userInput.startsWith("inspect "))
                 {
-                    // Comando per iniziare una sessione interattiva su un topic specificato
-                    String topicName = userInput.split(" ", 2)[1].trim(); // Estrai il nome del topic
-                    Topic topic = getTopicByName(topicName); // Trova il topic per nome
+                    //estrai il nome del topic e trovo il topic per nome
+                    String topicName = userInput.split(" ", 2)[1].trim();
+                    Topic topic = getTopicByName(topicName);
+                    //cerco se il topic inserito esiste oppure no
                     if (topic == null)
                     {
                         System.out.println("Errore: Topic '" + topicName + "' non trovato.");
                     }
                     else
                     {
-                        // Notifica i client che la sessione di ispezione sta per iniziare
+                        //notifica i client connessi al topicnche la sessione di ispezione sta per iniziare
                         notifyUsers("#session_start", topic);
-                        sessioneInterattiva(topic); // Avvia la sessione interattiva
+                        //metodo che permette di avviare la sessione interattiva
+                        sessioneInterattiva(topic);
                     }
                 }
                 else
@@ -69,40 +71,39 @@ public class ServerHandler extends Thread
         }
         catch (Exception e)
         {
-            // Gestione delle eccezioni durante l'esecuzione del server
             System.err.println("Errore durante l'esecuzione del server: " + e.getMessage());
-            e.printStackTrace(); // Stampa lo stack trace per il debug
+            e.printStackTrace();
         }
         finally
         {
-            stdIn.close(); // Chiudi lo Scanner
+            stdIn.close();
         }
     }
 
-    // Metodo per notificare tutti i client o solo quelli iscritti a un topic specifico
+    //metodo per notificare con un messaggio i client iscritti ad un topic specifico
     private void notifyUsers(String message, Topic topic)
     {
-        synchronized (listClient) // Sincronizza l'accesso alla lista dei client
+        //sincronizzo l'accesso alla lista dei client
+        synchronized (listClient)
         {
             for (ClientHandler client : listClient)
             {
-                // Salta i client che non sono ancora completamente registrati
                 if(client.getClient() == null)
                 {
                     continue;
                 }
-                // Notifica solo i client iscritti al topic specificato (se esiste)
+                //notifica solo i client iscritti al topic specificato (se esiste)
                 if (topic == null || client.getClient().getTopic().equals(topic))
                 {
                     try
                     {
-                        // Crea un PrintWriter per inviare il messaggio al client
+                        //crea un PrintWriter per inviare il messaggio al client specifico
                         PrintWriter out = new PrintWriter(client.getClient().getClientSocket().getOutputStream(), true);
+                        //invio il messaggio
                         out.println(message);
                     }
                     catch (IOException e)
                     {
-                        // Gestione delle eccezioni durante l'invio del messaggio
                         System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
                     }
                 }
@@ -110,78 +111,84 @@ public class ServerHandler extends Thread
         }
     }
 
-    // Metodo per fermare il server e chiudere tutte le connessioni
+    //metodo per stoppare il server e chiudere tutte le connessioni ai client
     private void stopServer() throws IOException
     {
-        synchronized (listClient) // Sincronizza l'accesso alla lista dei client
+        //sincronizzo l'accesso alla lista dei client
+        synchronized (listClient)
         {
             for (ClientHandler client : listClient)
             {
-                // Salta i client non completamente registrati
                 if(client.getClient() == null)
                 {
                     continue;
                 }
                 try
                 {
-                    // Chiudi il socket del client
+                    //chiudo la socket del client specifico
                     client.getClient().getClientSocket().close();
                 }
                 catch (IOException e)
                 {
-                    // Gestione delle eccezioni durante la chiusura del socket
                     System.err.println("Errore durante la chiusura del socket client: " + e.getMessage());
                 }
             }
-            listClient.clear(); // Pulisci la lista dei client
+            //pulisce la lista dei client connessi al server
+            listClient.clear();
         }
         try
         {
             if (!serverSocket.isClosed())
             {
-                // Chiudi il ServerSocket se non è già chiuso
+                //chiudo la socket del server e lo notifico al cliente con una stampa
                 serverSocket.close();
                 System.out.println("ServerSocket chiuso.");
             }
         }
         catch (IOException e)
         {
-            // Gestione delle eccezioni durante la chiusura del ServerSocket
             System.err.println("Errore durante la chiusura del ServerSocket: " + e.getMessage());
         }
+        //stampo in console che il server si è scollegato
         System.out.println("Server scollegato...");
     }
 
-    // Metodo per trovare un topic per nome
+    //metodo per trovare un topic dal suo nome
     private Topic getTopicByName(String name)
     {
-        synchronized (Server.topics) // Sincronizza l'accesso alla lista dei topic
+        //sincronizzo l'accesso alla lista dei topic
+        synchronized (Server.topics)
         {
             for (Topic topic : Server.topics)
             {
+                //ricerbo il nome del topic dal suo nome
                 if (topic.getName().equals(name))
                 {
-                    return topic; // Ritorna il topic se trovato
+                    //ritorna il topic se presente
+                    return topic;
                 }
             }
         }
-        return null; // Ritorna null se il topic non è stato trovato
+        //ritorna null se il topic non è stato trovato (il topic non esisteva)
+        return null;
     }
 
-    // Metodo per gestire una sessione interattiva su un topic
+    //metodo per gestire una sessione interattiva su un topic
     private void sessioneInterattiva(Topic topic)
     {
-        topic.setInInspection(true); // Imposta il topic come in ispezione
+        //imposto il topic come in ispezione (le richieste dei client verranno eseguite quando la variabile torna false)
+        topic.setInInspection(true);
         System.out.println("Sessione interattiva per il topic " + topic.getName().toUpperCase() + " iniziata");
         try
         {
             String userInput;
             while ((userInput = stdIn.nextLine()) != null)
             {
-                userInput = userInput.toLowerCase(); // Converti l'input in minuscolo
+                //conversione del comando in minuscolo per uniformità
+                userInput = userInput.toLowerCase();
+                //gestione del comando ":listall" per mostrare tutti i messaggi del topic
                 if (userInput.startsWith(":listall"))
                 {
-                    // Comando per elencare tutti i messaggi del topic
                     if (topic.getMessages().isEmpty())
                     {
                         System.out.println("Nel topic "+topic.getName().toUpperCase()+" non è stato inviato alcun messaggio");
@@ -191,25 +198,30 @@ public class ServerHandler extends Thread
                         System.out.println((topic.getMessages().size() == 1 ? "Un messaggio inviato ": topic.getMessages().size()+" messaggi inviati ")+"sul topic " + topic.getName().toUpperCase() + ":");
                         for (Message message : topic.getMessages())
                         {
-                            System.out.println(message.toString()+"\n"); // Mostra ogni messaggio
+                            //stampo in Console al sever ogni messaggio inviato nel topic
+                            System.out.println(message.toString()+"\n");
                         }
                     }
                 }
+                //gestione del comando ":delete" per eliminare un messaggio specificato dal suo ID
                 else if (userInput.startsWith(":delete "))
                 {
-                    // Comando per eliminare un messaggio specificato
+                    //variabile booleana per ricercare un ID specifico
                     boolean trovato = false;
-                    String messageIdStr = userInput.split(" ", 2)[1].trim(); // Estrai l'ID del messaggio
-                    int messageId = Integer.parseInt(messageIdStr); // Converte l'ID in int
-                    // Verifica se il messaggio con l'ID specificato esiste e lo elimina
+                    //estraggo l'ID del messaggio e converto l'ID in intero
+                    String messageIdStr = userInput.split(" ", 2)[1].trim();
+                    int messageId = Integer.parseInt(messageIdStr);
+                    //verifica se il messaggio con l'ID specificato esiste e lo elimina
                     for (Message message : topic.getMessages())
                     {
                         if(message.getId() == messageId)
                         {
+                            //l'ID viene trovato e il messaggio di conseguenza viene eliminato
                             trovato = true;
                             break;
                         }
                     }
+                    //se ho trovato l'ID elimino il messaggio altrimenti avviso l'utente che l'ID inserito non esisteva
                     if(trovato)
                     {
                         topic.deleteMessage(messageId);
@@ -220,14 +232,18 @@ public class ServerHandler extends Thread
                         System.out.println("ERRORE: messaggio avente id " + "'" + messageId + "'" + " non trovato. Riprova.");
                     }
                 }
+                //gestione del comando ":end" per uscire dalla fase di ispezione del topic
                 else if (userInput.startsWith(":end"))
                 {
-                    // Comando per terminare la sessione interattiva
+                    //comando per terminare la sessione interattiva
                     notifyUsers("#session_end", topic);
-                    this.processAllInspectMessage(); // Elenco dei messaggi di ispezione a tutti i client
-                    topic.setInInspection(false); // Imposta il topic come non in ispezione
+                    //l'elenco dei messaggi di ispezione di tutti i client mentre il server era in fase di ispezione
+                    this.processAllInspectMessage();
+                    //imposto il topic come il server non è più in ispezione
+                    topic.setInInspection(false);
                     System.out.println("Sessione interattiva per il topic " + topic.getName().toUpperCase() + " chiusa");
-                    break; // Esci dal ciclo e termina la sessione interattiva
+                    //esci dal ciclo e termina la sessione di ispezione al server
+                    break;
                 }
                 else
                 {
@@ -237,17 +253,17 @@ public class ServerHandler extends Thread
         }
         catch (Exception e)
         {
-            // Gestione delle eccezioni durante la lettura dell'input nella sessione interattiva
             System.err.println("Errore durante la lettura dell'input nella sessione interattiva: " + e.getMessage());
         }
     }
 
-    // Metodo per elaborare tutti i messaggi di ispezione per tutti i client
+    //metodo per elaborare tutti i messaggi di ispezione per tutti i client
     private void processAllInspectMessage()
     {
         for (ClientHandler client : listClient)
         {
-            client.getClient().processInspectMessages(); // Elenco dei messaggi di ispezione per ogni client
+            //elenco dei messaggi di ispezione per ogni client
+            client.getClient().processInspectMessages();
         }
     }
 }
