@@ -4,7 +4,7 @@ import java.util.List;
 public class Topic
 {
     //il nome del topic
-    private final String name; // nome del topic
+    private final String name;
     //la lista dei messaggi pubblicati sul topic
     private final List<Message> messages = new ArrayList<>();
     //la lista dei subscriber iscritti al topic
