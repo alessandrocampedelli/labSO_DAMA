@@ -79,4 +79,10 @@ public class Subscriber extends User
             out.println("Comando sconosciuto.");
         }
     }
+
+    //metodo che invia un messaggio al client con il nome e il contenuto del messaggio
+    public void sendMessage(Message message)
+    {
+        out.println("Nuovo messaggio inviato sul topic " + currentTopic.getName().toUpperCase() + ":\n" + message);
+    }
 }

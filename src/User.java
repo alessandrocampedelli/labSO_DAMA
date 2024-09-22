@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
-public class User
+public abstract class User
 {
     //la  socket del client
     protected Socket clientSocket;
@@ -40,12 +40,6 @@ public class User
 
     // metodo da sovrascrivere nelle classi derivate per gestire i comandi
     public void handleCommand(String inputLine) {};
-
-    //metodo che invia un messaggio al client con il nome e il contenuto del messaggio
-    public void sendMessage(Message message)
-    {
-        out.println("Nuovo messaggio inviato sul topic " + currentTopic.getName().toUpperCase() + ":\n" + message);
-    }
 
     //metodo che inserisce un messaggio in coda per l'elaborazione perchè il server è in ispezione
     protected void addInspectMessage(String m)
