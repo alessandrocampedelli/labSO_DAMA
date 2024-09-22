@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
-public class User
+public abstract class User
 {
     //la  socket del client
     protected Socket clientSocket;
