@@ -28,12 +28,13 @@ public class ServerHandler extends Thread
         {
             String userInput;
             //ciclo principale per leggere l'input dell'utente
-            while ((userInput = stdIn.nextLine()) != null)
+            while ((userInput = stdIn.nextLine()) != null && !serverSocket.isClosed())
             {
                 //conversione del comando in minuscolo per uniformità
                 userInput = userInput.toLowerCase();
                 if (userInput.startsWith("quit"))
                 {
+
                     //metodo per far terminare l'esecuzione del server e notifichiamo tutti i client dell'accaduto
                     notifyUsers("#close", null);
                     stopServer();
@@ -62,8 +63,13 @@ public class ServerHandler extends Thread
                         //metodo che permette di avviare la sessione interattiva
                         sessioneInterattiva(topic);
                     }
-                }
-                else
+                } else if (userInput.startsWith("num ")) {
+                    int c = 0;
+                    for(ClientHandler client : listClient){
+                        c++;
+                    }
+                    System.out.println("num client connessi: "+c);
+                } else
                 {
                     System.out.println("Comando non riconosciuto.");
                 }
@@ -90,6 +96,16 @@ public class ServerHandler extends Thread
             {
                 if(client.getClient() == null)
                 {
+                    if(message.equals("#close")) {
+                        try {
+                            //crea un PrintWriter per inviare il messaggio al client specifico
+                            PrintWriter out = new PrintWriter(client.getSocket().getOutputStream(), true);
+                            //invio il messaggio
+                            out.println(message);
+                        } catch (IOException e) {
+                            System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
+                        }
+                    }
                     continue;
                 }
                 //notifica solo i client iscritti al topic specificato (se esiste)
@@ -119,14 +135,10 @@ public class ServerHandler extends Thread
         {
             for (ClientHandler client : listClient)
             {
-                if(client.getClient() == null)
-                {
-                    continue;
-                }
                 try
                 {
                     //chiudo la socket del client specifico
-                    client.getClient().getClientSocket().close();
+                    client.getSocket().close();
                 }
                 catch (IOException e)
                 {

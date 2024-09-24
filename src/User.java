@@ -61,6 +61,9 @@ public abstract class User
             this.handleCommand(inspectMessages.removeFirst());
         }
     }
+    public Topic getCurrentTopic(){
+        return this.currentTopic;
+    }
 
     //metodo che registra i flussi di input e output per la comunicazione con il client
     protected void registerOutputAndInput() throws IOException

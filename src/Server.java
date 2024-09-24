@@ -22,32 +22,30 @@ public class Server
         int port = DEFAULT_PORT;
         List<ClientHandler> listClient = new ArrayList<>();
 
-        try
-        {
+        try {
             //crea una socket del server sulla porta specificata
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server in ascolto sulla porta " + port);
             //gestisco contemporaneamente la console del server all'attesa di nuovi client
             new ServerHandler(serverSocket, listClient).start();
             //accetta connessioni dei client in un ciclo infinito
-            while (!serverSocket.isClosed())
-            {
-                try
-                {
+            while (!serverSocket.isClosed()) {
+                try {
                     //accetta una nuova connessione client
-                    Socket clientSocket = serverSocket.accept();
-                    //crea un nuovo handler per il client connesso
-                    ClientHandler client = new ClientHandler(clientSocket, listClient);
-                    //avvia il thread per gestire il client
-                    client.start();
-                    synchronized (listClient)
-                    {
-                        //aggiunge il client alla lista in modo sicuro da thread multipli
-                        listClient.add(client);
-                    }
+                        Socket clientSocket = serverSocket.accept();
+                        //crea un nuovo handler per il client connesso
+                        ClientHandler client = new ClientHandler(clientSocket, listClient, serverSocket);
+                        //avvia il thread per gestire il client
+                        client.start();
+                        synchronized (listClient) {
+                            //aggiunge il client alla lista in modo sicuro da thread multipli
+                            listClient.add(client);
+                        }
+
                 }
                 catch (IOException e)
                 {
+                    //e.printStackTrace();
                     //quando chiudo il server l'accept non riesce più ad eseguire in quanto la serversocket è stata chiusa
                     if (!serverSocket.isClosed())
                     {
@@ -56,12 +54,11 @@ public class Server
                     break;
                 }
             }
-            //chiusura del server
-            System.exit(0);
+
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

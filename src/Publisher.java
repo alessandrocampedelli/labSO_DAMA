@@ -125,7 +125,7 @@ public class Publisher extends User
         //gestione del comando "quit" per disconnettersi
         else if (inputLine.equals("quit"))
         {
-            out.println("Disconnessione in corso...");
+            //lascio vuoto che viene gestita dal listenerThread della classe Client
         }
         //gestione del comando "inspect" per avvisare l'utente che il topic è in ispezione
         else if (inputLine.equals("inspect"))
