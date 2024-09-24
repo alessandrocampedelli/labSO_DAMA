@@ -43,7 +43,9 @@ public class Client
                     if (flag == false) {
                         break;
                     }
-
+                    if(!listenerThread.isAlive()){
+                        listenerThread = startListenerThread(socket,in);
+                    }
                 }
             }
         }
@@ -71,6 +73,7 @@ public class Client
                         System.out.println("digita quit per terminare il programma");
                         break;
                     } else if (response.equals("#inspect")) {
+                        System.out.println("entrato");
                         flag = true;
                         break;
                     }
