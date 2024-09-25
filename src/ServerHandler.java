@@ -236,7 +236,15 @@ public class ServerHandler extends Thread
                     //se ho trovato l'ID elimino il messaggio altrimenti avviso l'utente che l'ID inserito non esisteva
                     if(trovato)
                     {
+                        //una volta trovato il messaggio lo elimino sia dalla lista di messaggi del topic, sia dalla lista dei messaggi
+                        //del publisher che aveva inviato quel messaggio
                         topic.deleteMessage(messageId);
+
+                        for(ClientHandler clientHandler : listClient){
+                            Publisher p = (Publisher) clientHandler.getClient();
+                            //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
+                            p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
+                        }
                         System.out.println("Eliminazione messaggio avente id " + "'" + messageId + "'" + " avvenuta con successo.");
                     }
                     else

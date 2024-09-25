@@ -137,4 +137,8 @@ public class Publisher extends User
             out.println("Comando sconosciuto.");
         }
     }
+
+    public List<Message> getMessaggiUtente() {
+        return messaggiUtente;
+    }
 }

@@ -75,7 +75,7 @@ public class ClientHandler extends Thread
                             }
                             //comando "quit" per disconnettersi dal topic e dal programma
                             else if (inputLine.equals("quit")) {
-                                notifyQuit();
+                                notifyQuit("#close");
                                 break;
                             } else {
                                 out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
@@ -106,7 +106,7 @@ public class ClientHandler extends Thread
                         }
                         else
                         {
-                            notifyQuitInspect();
+                            notifyQuit("#inspect");
                             out.println("Il comando quit non si può utilizzare durante l'inspect...");
                         }
                     }
@@ -114,7 +114,7 @@ public class ClientHandler extends Thread
                     //disconnessione del client se invia il comando "quit" e non è in ispezione
                     if (inputLine.equals("quit") && !client.getTopic().isInInspection())
                     {
-                        notifyQuit();
+                        notifyQuit("#close");
                         break;
                     }
                 }
@@ -136,18 +136,10 @@ public class ClientHandler extends Thread
         }
     }
     //metodo per notificare la disconnessione del client al server
-    public void notifyQuit(){
+    public void notifyQuit(String m){
         try {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            out.println("#close");
-        } catch (IOException e) {
-            System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
-        }
-    }
-    public void notifyQuitInspect(){
-        try {
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            out.println("#inspect");
+            out.println(m);
         } catch (IOException e) {
             System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
         }
