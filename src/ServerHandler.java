@@ -252,9 +252,9 @@ public class ServerHandler extends Thread
                     notifyUsers("#session_end", topic);
                     //l'elenco dei messaggi di ispezione di tutti i client mentre il server era in fase di ispezione
                     this.processAllInspectMessage();
+                    System.out.println("Sessione interattiva per il topic " + topic.getName().toUpperCase() + " chiusa");
                     //imposto il topic come il server non è più in ispezione
                     topic.setInInspection(false);
-                    System.out.println("Sessione interattiva per il topic " + topic.getName().toUpperCase() + " chiusa");
                     //esci dal ciclo e termina la sessione di ispezione al server
                     break;
                 }
