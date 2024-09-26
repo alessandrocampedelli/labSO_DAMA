@@ -9,6 +9,7 @@ public class Server
 {
     public static final List<Topic> topics = new ArrayList<>();
     public static final List<ClientHandler> listClient = new ArrayList<>();
+    public static final Object lock = new Object();
     private static final int DEFAULT_PORT = 9000;
 
     public static void main(String[] args)

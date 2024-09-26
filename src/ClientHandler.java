@@ -41,52 +41,52 @@ public class ClientHandler extends Thread
                     {
                         String inputLine = in.nextLine().toLowerCase();
                         //il client si registra come "publisher"
-                            if (inputLine.startsWith("publish "))
+                        if (inputLine.startsWith("publish "))
+                        {
+                            String topicName = inputLine.substring(8).trim();
+                            if (!topicName.isEmpty())
                             {
-                                String topicName = inputLine.substring(8).trim();
-                                if (!topicName.isEmpty())
-                                {
-                                    //crea un nuovo publisher associato al topic specificato
-                                    client = new Publisher(clientSocket, Server.getOrCreateTopic(topicName));
-                                    client.registerOutputAndInput();
-                                    client.handleCommand(inputLine);
-                                    System.out.println("Un nuovo client si è connesso come PUBLISHER al topic " + topicName.toUpperCase());
-                                }
-                                else
-                                {
-                                    out.println("Errore: il topic non è specificato. Riprova");
-                                }
-                            }
-                            //il client si registra come "subscriber"
-                            else if (inputLine.startsWith("subscribe ")) {
-                                String topicName = inputLine.substring(10).trim();
-                                if (!topicName.isEmpty()) {
-                                    //crea un nuovo subscriber associato al topic specificato
-                                    client = new Subscriber(clientSocket, Server.getOrCreateTopic(topicName));
-                                    client.registerOutputAndInput();
-                                    client.handleCommand(inputLine);
-                                    System.out.println("Un nuovo client si è connesso come SUBSCRIBER al topic " + topicName.toUpperCase());
-                                }
-                                else
-                                {
-                                    out.println("Errore: il topic non è specificato. Riprova");
-                                }
-                            }
-                            //comando "show" per visualizzare i topic disponibili
-                            else if (inputLine.equals("show"))
-                            {
-                                Server.showTopics(out);
-                            }
-                            //comando "quit" per disconnettersi dal topic e dal programma
-                            else if (inputLine.equals("quit"))
-                            {
-                                notifyQuit("#closeClient");
-                                break;
+                                //crea un nuovo publisher associato al topic specificato
+                                client = new Publisher(clientSocket, Server.getOrCreateTopic(topicName));
+                                client.registerOutputAndInput();
+                                client.handleCommand(inputLine);
+                                System.out.println("Un nuovo client si è connesso come PUBLISHER al topic " + topicName.toUpperCase());
                             }
                             else
                             {
-                                out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
+                                out.println("Errore: il topic non è specificato. Riprova");
                             }
+                        }
+                        //il client si registra come "subscriber"
+                        else if (inputLine.startsWith("subscribe ")) {
+                            String topicName = inputLine.substring(10).trim();
+                            if (!topicName.isEmpty()) {
+                                //crea un nuovo subscriber associato al topic specificato
+                                client = new Subscriber(clientSocket, Server.getOrCreateTopic(topicName));
+                                client.registerOutputAndInput();
+                                client.handleCommand(inputLine);
+                                System.out.println("Un nuovo client si è connesso come SUBSCRIBER al topic " + topicName.toUpperCase());
+                            }
+                            else
+                            {
+                                out.println("Errore: il topic non è specificato. Riprova");
+                            }
+                        }
+                        //comando "show" per visualizzare i topic disponibili
+                        else if (inputLine.equals("show"))
+                        {
+                            Server.showTopics(out);
+                        }
+                        //comando "quit" per disconnettersi dal topic e dal programma
+                        else if (inputLine.equals("quit"))
+                        {
+                            notifyQuit("#closeClient");
+                            break;
+                        }
+                        else
+                        {
+                            out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
+                        }
 
                     }
                     catch(NoSuchElementException e)
@@ -96,45 +96,39 @@ public class ClientHandler extends Thread
                     }
                 }
             }
-            if(this.getClient() != null)
-            {
+            if (this.getClient() != null) {
                 //ciclo per gestire ulteriori comandi dopo la registrazione
-                while (running && in.hasNextLine())
-                {
-                    String inputLine = in.nextLine();
-                    if (!client.getTopic().isInInspection())
-                    {
-                        client.handleCommand(inputLine);
-                    }
-                    else
-                    {
-                        //gestione dei comandi durante un'ispezione
-                        if(!inputLine.equals("quit"))
-                        {
-                            client.handleCommand("inspect");
-                            client.addInspectMessage(inputLine);
+                while (running && in.hasNextLine()) {
+                    synchronized (Server.lock) {        //lock per evitare problemi durante un context switch del thread
+                                                        // serverhandler prima che modifichi la variabile InInspection
+                                                        // (sincronizzazione per la variabile InInspection che viene modificta da un thread e letta da un altro)
+                        String inputLine = in.nextLine();
+                        if (!client.getTopic().isInInspection()) {
+                            client.handleCommand(inputLine);
+                        } else {
+                            //gestione dei comandi durante un'ispezione
+                            if (!inputLine.equals("quit")) {
+                                client.handleCommand("inspect");
+                                client.addInspectMessage(inputLine);
+                            } else {
+                                notifyQuit("#inspect");
+                                out.println("Il comando quit non si può utilizzare durante l'inspect...");
+                            }
                         }
-                        else
-                        {
-                            notifyQuit("#inspect");
-                            out.println("Il comando quit non si può utilizzare durante l'inspect...");
-                        }
-                    }
 
-                    //disconnessione del client se invia il comando "quit" e non è in ispezione
-                    if (inputLine.equals("quit") && !client.getTopic().isInInspection())
-                    {
-                        System.out.println("Client disconnesso");
-                        notifyQuit("#closeClient");
-                        break;
+                        //disconnessione del client se invia il comando "quit" e non è in ispezione
+                        if (inputLine.equals("quit") && !client.getTopic().isInInspection()) {
+                            System.out.println("Client disconnesso");
+                            notifyQuit("#closeClient");
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
+            } else {
                 //non stampo sul server il fatto che il client si sia collegato, in quanto non si è registrato
                 clientSocket.close();
             }
+
         }
         catch (SocketException e)
         {

@@ -27,10 +27,7 @@ public abstract class User
     }
 
     //metodo che restituisce il topic corrente
-    public Topic getTopic()
-    {
-        return this.currentTopic;
-    }
+
 
     //metodo che restituisce la socket del client
     protected Socket getClientSocket()
@@ -61,7 +58,8 @@ public abstract class User
             this.handleCommand(inspectMessages.removeFirst());
         }
     }
-    public Topic getCurrentTopic(){
+    public Topic getTopic()
+    {
         return this.currentTopic;
     }
 

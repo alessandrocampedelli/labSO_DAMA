@@ -48,12 +48,13 @@ public class ServerHandler extends Thread
                     String topicName = userInput.split(" ", 2)[1].trim();
                     Topic topic = getTopicByName(topicName);
                     //cerco se il topic inserito esiste oppure no
-                    if (topic == null)
-                    {
+                    if (topic == null) {
                         System.out.println("Errore: Topic '" + topicName + "' non trovato.");
-                    }
-                    else
-                    {
+                    } else {
+                        synchronized (Server.lock) {        //per evitare problemi nel context switch quando il client legge la condizione dell'if isInInspection
+                            //imposto il topic come in ispezione (le richieste dei client verranno eseguite quando la variabile torna false)
+                            topic.setInInspection(true);
+                        }
                         //notifica i client connessi al topicnche la sessione di ispezione sta per iniziare
                         notifyUsers("#session_start", topic);
                         //metodo che permette di avviare la sessione interattiva
@@ -179,8 +180,6 @@ public class ServerHandler extends Thread
     //metodo per gestire una sessione interattiva su un topic
     private void sessioneInterattiva(Topic topic)
     {
-        //imposto il topic come in ispezione (le richieste dei client verranno eseguite quando la variabile torna false)
-        topic.setInInspection(true);
         System.out.println("Sessione interattiva per il topic " + topic.getName().toUpperCase() + " iniziata");
         try
         {
