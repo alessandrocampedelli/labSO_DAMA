@@ -75,7 +75,7 @@ public class ClientHandler extends Thread
                             }
                             //comando "quit" per disconnettersi dal topic e dal programma
                             else if (inputLine.equals("quit")) {
-                                notifyQuit("#close");
+                                notifyQuit("#closeClient");
                                 break;
                             } else {
                                 out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
@@ -114,7 +114,7 @@ public class ClientHandler extends Thread
                     //disconnessione del client se invia il comando "quit" e non è in ispezione
                     if (inputLine.equals("quit") && !client.getTopic().isInInspection())
                     {
-                        notifyQuit("#close");
+                        notifyQuit("#closeClient");
                         break;
                     }
                 }

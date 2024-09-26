@@ -36,7 +36,7 @@ public class ServerHandler extends Thread
                 {
 
                     //metodo per far terminare l'esecuzione del server e notifichiamo tutti i client dell'accaduto
-                    notifyUsers("#close", null);
+                    notifyUsers("#closeServer", null);
                     stopServer();
                     break;
                 }
@@ -96,7 +96,7 @@ public class ServerHandler extends Thread
             {
                 if(client.getClient() == null)
                 {
-                    if(message.equals("#close")) {
+                    if(message.equals("#closeServer")) {
                         try {
                             //crea un PrintWriter per inviare il messaggio al client specifico
                             PrintWriter out = new PrintWriter(client.getSocket().getOutputStream(), true);
@@ -245,6 +245,7 @@ public class ServerHandler extends Thread
                                 Publisher p = (Publisher) clientHandler.getClient();
                                 //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
                                 p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
+                                notifyUsers("#delete"+messageId,topic);
                             }
                         }
                         System.out.println("Eliminazione messaggio avente id " + "'" + messageId + "'" + " avvenuta con successo.");

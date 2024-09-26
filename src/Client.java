@@ -1,3 +1,4 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -22,7 +23,7 @@ public class Client
              // oggetto di tipo "PrintWriter" per inviare i dati al server
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              // oggetto di tipo "Scanner" per ricevere dati dal server
-             Scanner in = new Scanner(new InputStreamReader(socket.getInputStream()));
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              // oggetto di tipo "Scanner" per leggere input dell'utente da tastiera
              Scanner stdIn = new Scanner(System.in)) {
 
@@ -56,25 +57,31 @@ public class Client
             throw new RuntimeException(e);
         }
     }
-    public static Thread startListenerThread(Socket socket, Scanner in){
+    public static Thread startListenerThread(Socket socket, BufferedReader in){
         // thread per gestire la ricezione dei messaggi dal server
         Thread listenerThread = new Thread(() ->
         {
             try
             {
+                String response;
                 // ciclo per continuare a ricevere messaggi finché la socket non è chiusa
-                while (!socket.isClosed() && in.hasNextLine())
+                while (!socket.isClosed() && (response = in.readLine()) != null)
                 {
-                    String response = in.nextLine();
                     // caso in cui il server avvisa che si sta disconnettendo
-                    if (response.equals("#close")) {
+                    if (response.equals("#closeServer")) {
                         System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
                         flag = false;
                         System.out.println("digita quit per terminare il programma");
                         break;
+                    } else if (response.equals("#closeClient")) {
+                        flag = false;
+                        System.out.println("Disconnesione in corso...");
                     } else if (response.equals("#inspect")) {
                         flag = true;
                         break;
+                    }  else if (response.startsWith("#delete")) {
+                        String id = response.substring(7);
+                        System.out.println("Il server ha eliminato il messaggio con id: "+id+"\n");
                     }
                     // caso in cui il server avvisa che ha avviato una sessione interattiva
                     else if (response.equals("#session_start")) {
@@ -87,6 +94,10 @@ public class Client
                     // caso di default quando il server inoltra un messaggio inviato sul topic ai subscriber di quel topic
                     else {
                         System.out.println(response);
+                        if(!in.ready())
+                        {
+                            System.out.println();
+                        }
                     }
                 }
             }

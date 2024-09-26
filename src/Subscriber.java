@@ -64,17 +64,14 @@ public class Subscriber extends User
         {
             Server.showTopics(out);
         }
-        //gestione del comando "quit" per disconnettersi
-        else if (inputLine.equals("quit"))
-        {
-            out.println("Disconnessione in corso...");
-        }
         //gestione del comando "inspect" per avvisare l'utente che il topic è in ispezione
         else if (inputLine.equals("inspect"))
         {
             out.println("Il topic è in ispezione. Il messaggio verrà elaborato dal server una volta terminata la fase di ispezione");
         }
-        else
+        //caso in cui l'utente ho scrive un comando inesistente, oppure se scrive quit
+        //nel caso del quit la stampa corretta avviene nella classe Client.java
+        else if(!inputLine.equals("quit"))
         {
             out.println("Comando sconosciuto.");
         }
