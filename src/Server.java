@@ -67,39 +67,38 @@ public class Server
     }
 
     //metodo che crea o recupera un topic esistente
-    public static synchronized Topic getOrCreateTopic(String name)
+    public static Topic getOrCreateTopic(String name)
     {
-        //cerco se il topic esiste già
-        for (Topic topic : topics)
-        {
-            if (topic.getName().equals(name))
-            {
-                //ritorna il topic esistente se presente
-                return topic;
+        synchronized (topics) {
+            //cerco se il topic esiste già
+            for (Topic topic : topics) {
+                if (topic.getName().equals(name)) {
+                    //ritorna il topic esistente se presente
+                    return topic;
+                }
             }
+            //crea un nuovo topic e lo aggiunge alla lista se non esiste
+            Topic newTopic = new Topic(name);
+            topics.add(newTopic);
+
+            return newTopic;
         }
-        //crea un nuovo topic e lo aggiunge alla lista se non esiste
-        Topic newTopic = new Topic(name);
-        topics.add(newTopic);
-        return newTopic;
     }
 
     //metodo che mostra la lista dei topic attualmente disponibili
-    public static synchronized void showTopics(PrintWriter out)
+    public static void showTopics(PrintWriter out)
     {
-        //controlla se ci sono topic creati
-        if (!topics.isEmpty())
-        {
-            out.println(topics.size() == 1 ? ("Un solo topic creato al momento: ") : (topics.size() + " topics creati al momento: ")); //mostra un messaggio diverso se c'è un solo topic o più di uno
-            //stampo il nome di ciascun topic
-            for (Topic topic : topics)
-            {
-                out.println("- " + topic.getName());
+        synchronized (topics) {
+            //controlla se ci sono topic creati
+            if (!topics.isEmpty()) {
+                out.println(topics.size() == 1 ? ("Un solo topic creato al momento: ") : (topics.size() + " topics creati al momento: ")); //mostra un messaggio diverso se c'è un solo topic o più di uno
+                //stampo il nome di ciascun topic
+                for (Topic topic : topics) {
+                    out.println("- " + topic.getName());
+                }
+            } else {
+                out.println("Non è presente alcun topic creato.");
             }
-        }
-        else
-        {
-            out.println("Non è presente alcun topic creato.");
         }
     }
 }

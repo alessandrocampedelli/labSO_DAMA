@@ -59,12 +59,6 @@ public class ServerHandler extends Thread
                         //metodo che permette di avviare la sessione interattiva
                         sessioneInterattiva(topic);
                     }
-                } else if (userInput.startsWith("num ")) {
-                    int c = 0;
-                    for(ClientHandler client : Server.listClient){
-                        c++;
-                    }
-                    System.out.println("num client connessi: "+c);
                 } else
                 {
                     System.out.println("Comando non riconosciuto.");
@@ -157,6 +151,7 @@ public class ServerHandler extends Thread
         {
             System.err.println("Errore durante la chiusura del ServerSocket: " + e.getMessage());
         }
+
         //stampo in console che il server si è scollegato
         System.out.println("Server scollegato...");
     }
@@ -230,20 +225,18 @@ public class ServerHandler extends Thread
                         }
                     }
                     //se ho trovato l'ID elimino il messaggio altrimenti avviso l'utente che l'ID inserito non esisteva
-                    if(trovato)
-                    {
+                    if(trovato){
                         //una volta trovato il messaggio lo elimino sia dalla lista di messaggi del topic, sia dalla lista dei messaggi
                         //del publisher che aveva inviato quel messaggio
                         topic.deleteMessage(messageId);
-
-                        for(ClientHandler clientHandler : Server.listClient)
-                        {
-                            if(clientHandler.getClient() instanceof Publisher)
-                            {
-                                Publisher p = (Publisher) clientHandler.getClient();
-                                //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
-                                p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
-                                notifyUsers("#delete"+messageId,topic);
+                        synchronized (Server.listClient) {
+                            for (ClientHandler clientHandler : Server.listClient) {
+                                if (clientHandler.getClient() instanceof Publisher) {
+                                    Publisher p = (Publisher) clientHandler.getClient();
+                                    //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
+                                    p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
+                                    notifyUsers("#delete" + messageId, topic);
+                                }
                             }
                         }
                         System.out.println("Eliminazione messaggio avente id " + "'" + messageId + "'" + " avvenuta con successo.");
@@ -281,10 +274,11 @@ public class ServerHandler extends Thread
     //metodo per elaborare tutti i messaggi di ispezione per tutti i client
     private void processAllInspectMessage()
     {
-        for (ClientHandler client : Server.listClient)
-        {
-            //elenco dei messaggi di ispezione per ogni client
-            client.getClient().processInspectMessages();
+        synchronized (Server.listClient) {
+            for (ClientHandler client : Server.listClient) {
+                //elenco dei messaggi di ispezione per ogni client
+                client.getClient().processInspectMessages();
+            }
         }
     }
 }
