@@ -241,9 +241,11 @@ public class ServerHandler extends Thread
                         topic.deleteMessage(messageId);
 
                         for(ClientHandler clientHandler : listClient){
-                            Publisher p = (Publisher) clientHandler.getClient();
-                            //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
-                            p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
+                            if(clientHandler.getClient() instanceof Publisher) {
+                                Publisher p = (Publisher) clientHandler.getClient();
+                                //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
+                                p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
+                            }
                         }
                         System.out.println("Eliminazione messaggio avente id " + "'" + messageId + "'" + " avvenuta con successo.");
                     }
