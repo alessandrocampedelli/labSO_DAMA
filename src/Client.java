@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -11,8 +8,6 @@ public class Client
     private static final int DEFAULT_SERVER_PORT = 9000;
     private static volatile Boolean flag = true;
     private static final Object lock = new Object(); // Oggetto di lock per sincronizzazione
-
-
 
     public static void main(String[] args)
     {
@@ -38,13 +33,15 @@ public class Client
             while ((userInput = stdIn.nextLine()) != null)
             {
                 out.println(userInput);
-
-                if (userInput.equals("quit")) {
+                if (userInput.equals("quit"))
+                {
                     listenerThread.join();
-                    if (flag == false) {
+                    if (flag == false)
+                    {
                         break;
                     }
-                    if(!listenerThread.isAlive()){
+                    if(!listenerThread.isAlive())
+                    {
                         listenerThread = startListenerThread(socket,in);
                     }
                 }
@@ -53,11 +50,14 @@ public class Client
         catch (IOException e)
         {
             System.out.println("Impossibile connettersi al server " + serverIp + ":" + serverPort);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e)
+        {
             throw new RuntimeException(e);
         }
     }
-    public static Thread startListenerThread(Socket socket, BufferedReader in){
+    public static Thread startListenerThread(Socket socket, BufferedReader in)
+    {
         // thread per gestire la ricezione dei messaggi dal server
         Thread listenerThread = new Thread(() ->
         {
@@ -68,31 +68,41 @@ public class Client
                 while (!socket.isClosed() && (response = in.readLine()) != null)
                 {
                     // caso in cui il server avvisa che si sta disconnettendo
-                    if (response.equals("#closeServer")) {
+                    if (response.equals("#closeServer"))
+                    {
                         System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
                         flag = false;
-                        System.out.println("digita quit per terminare il programma");
+                        System.exit(0);
                         break;
-                    } else if (response.equals("#closeClient")) {
+                    }
+                    else if (response.equals("#closeClient"))
+                    {
                         flag = false;
                         System.out.println("Disconnesione in corso...");
-                    } else if (response.equals("#inspect")) {
+                    }
+                    else if (response.equals("#inspect"))
+                    {
                         flag = true;
                         break;
-                    }  else if (response.startsWith("#delete")) {
+                    }
+                    else if (response.startsWith("#delete"))
+                    {
                         String id = response.substring(7);
                         System.out.println("Il server ha eliminato il messaggio con id: "+id+"\n");
                     }
                     // caso in cui il server avvisa che ha avviato una sessione interattiva
-                    else if (response.equals("#session_start")) {
+                    else if (response.equals("#session_start"))
+                    {
                         System.out.println("ATTENZIONE: è stata avviata una sessione interattiva sul topic da parte del server\n");
                     }
                     // caso in cui il server avvisa che ha terminato la sessione interattiva
-                    else if (response.equals("#session_end")) {
+                    else if (response.equals("#session_end"))
+                    {
                         System.out.println("ATTENZIONE: il server ha interrotto la sessione interattiva sul topic\n");
                     }
                     // caso di default quando il server inoltra un messaggio inviato sul topic ai subscriber di quel topic
-                    else {
+                    else
+                    {
                         System.out.println(response);
                         if(!in.ready())
                         {

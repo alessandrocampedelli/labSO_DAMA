@@ -34,7 +34,6 @@ public class ServerHandler extends Thread
                 userInput = userInput.toLowerCase();
                 if (userInput.startsWith("quit"))
                 {
-
                     //metodo per far terminare l'esecuzione del server e notifichiamo tutti i client dell'accaduto
                     notifyUsers("#closeServer", null);
                     stopServer();
@@ -240,8 +239,10 @@ public class ServerHandler extends Thread
                         //del publisher che aveva inviato quel messaggio
                         topic.deleteMessage(messageId);
 
-                        for(ClientHandler clientHandler : listClient){
-                            if(clientHandler.getClient() instanceof Publisher) {
+                        for(ClientHandler clientHandler : listClient)
+                        {
+                            if(clientHandler.getClient() instanceof Publisher)
+                            {
                                 Publisher p = (Publisher) clientHandler.getClient();
                                 //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
                                 p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
