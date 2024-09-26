@@ -12,18 +12,15 @@ public class ClientHandler extends Thread
     private final Socket clientSocket;
     private ServerSocket serversocket;
     private User client;
-    //la lista dei client connessi
-    private List<ClientHandler> listClient;
     //variabile booleana per sapere se il sever è in ispezione oppure no
     private volatile boolean running = true;
     private Scanner in;
     private PrintWriter out;
 
     //metodo costruttore che permette l'inizializzazione della socket e della lista dei client connessi
-    public ClientHandler(Socket socket, List<ClientHandler> listClient, ServerSocket serversocket)
+    public ClientHandler(Socket socket, ServerSocket serversocket)
     {
         this.clientSocket = socket;
-        this.listClient = listClient;
         this.serversocket = serversocket;
     }
 
@@ -173,9 +170,9 @@ public class ClientHandler extends Thread
         running = false;
         try
         {
-            synchronized (listClient)
+            synchronized (Server.listClient)
             {
-                listClient.removeIf(ClientHandler -> ClientHandler.getSocket().equals(clientSocket));
+                Server.listClient.removeIf(ClientHandler -> ClientHandler.getSocket().equals(clientSocket));
             }
             if (!clientSocket.isClosed())
             {

@@ -8,16 +8,13 @@ public class ServerHandler extends Thread
 {
     //socket del server per accettare connessioni dai client
     private final ServerSocket serverSocket;
-    //lista dei client connessi al server
-    private final List<ClientHandler> listClient;
     private final Scanner stdIn;
     private final PrintWriter out = new PrintWriter(System.out, true);
 
     //metodo costruttore che inizializza la socket del sever, la lista dei ClientHandler e lo scanner
-    public ServerHandler(ServerSocket serverSocket, List<ClientHandler> listClient)
+    public ServerHandler(ServerSocket serverSocket)
     {
         this.serverSocket = serverSocket;
-        this.listClient = listClient;
         this.stdIn = new Scanner(System.in);
     }
 
@@ -64,7 +61,7 @@ public class ServerHandler extends Thread
                     }
                 } else if (userInput.startsWith("num ")) {
                     int c = 0;
-                    for(ClientHandler client : listClient){
+                    for(ClientHandler client : Server.listClient){
                         c++;
                     }
                     System.out.println("num client connessi: "+c);
@@ -89,9 +86,9 @@ public class ServerHandler extends Thread
     private void notifyUsers(String message, Topic topic)
     {
         //sincronizzo l'accesso alla lista dei client
-        synchronized (listClient)
+        synchronized (Server.listClient)
         {
-            for (ClientHandler client : listClient)
+            for (ClientHandler client : Server.listClient)
             {
                 if(client.getClient() == null)
                 {
@@ -130,9 +127,9 @@ public class ServerHandler extends Thread
     private void stopServer() throws IOException
     {
         //sincronizzo l'accesso alla lista dei client
-        synchronized (listClient)
+        synchronized (Server.listClient)
         {
-            for (ClientHandler client : listClient)
+            for (ClientHandler client : Server.listClient)
             {
                 try
                 {
@@ -145,7 +142,7 @@ public class ServerHandler extends Thread
                 }
             }
             //pulisce la lista dei client connessi al server
-            listClient.clear();
+            Server.listClient.clear();
         }
         try
         {
@@ -239,7 +236,7 @@ public class ServerHandler extends Thread
                         //del publisher che aveva inviato quel messaggio
                         topic.deleteMessage(messageId);
 
-                        for(ClientHandler clientHandler : listClient)
+                        for(ClientHandler clientHandler : Server.listClient)
                         {
                             if(clientHandler.getClient() instanceof Publisher)
                             {
@@ -284,7 +281,7 @@ public class ServerHandler extends Thread
     //metodo per elaborare tutti i messaggi di ispezione per tutti i client
     private void processAllInspectMessage()
     {
-        for (ClientHandler client : listClient)
+        for (ClientHandler client : Server.listClient)
         {
             //elenco dei messaggi di ispezione per ogni client
             client.getClient().processInspectMessages();

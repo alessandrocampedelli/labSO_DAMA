@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 public class Server
 {
     public static final List<Topic> topics = new ArrayList<>();
+    public static final List<ClientHandler> listClient = new ArrayList<>();
     private static final int DEFAULT_PORT = 9000;
 
     public static void main(String[] args)
@@ -20,7 +21,6 @@ public class Server
         */
 
         int port = DEFAULT_PORT;
-        List<ClientHandler> listClient = new ArrayList<>();
 
         try
         {
@@ -28,7 +28,7 @@ public class Server
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server in ascolto sulla porta " + port);
             //gestisco contemporaneamente la console del server all'attesa di nuovi client
-            new ServerHandler(serverSocket, listClient).start();
+            new ServerHandler(serverSocket).start();
             //accetta connessioni dei client in un ciclo infinito
             while (!serverSocket.isClosed())
             {
@@ -37,7 +37,7 @@ public class Server
                     //accetta una nuova connessione client
                     Socket clientSocket = serverSocket.accept();
                     //crea un nuovo handler per il client connesso
-                    ClientHandler client = new ClientHandler(clientSocket, listClient, serverSocket);
+                    ClientHandler client = new ClientHandler(clientSocket, serverSocket);
                     //avvia il thread per gestire il client
                     client.start();
                     synchronized (listClient)
