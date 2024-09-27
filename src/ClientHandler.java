@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -12,7 +11,7 @@ public class ClientHandler extends Thread
     private final Socket clientSocket;
     private ServerSocket serversocket;
     private User client;
-    //variabile booleana per sapere se il sever è in ispezione oppure no
+    //variabile booleana per sapere se il server è in ispezione oppure no
     private volatile boolean running = true;
     private Scanner in;
     private PrintWriter out;
@@ -25,15 +24,18 @@ public class ClientHandler extends Thread
     }
 
     @Override
-    public void run() {
-        try {
+    public void run()
+    {
+        try
+        {
             InputStream inputStream = clientSocket.getInputStream();
             OutputStream outputStream = clientSocket.getOutputStream();
             in = new Scanner(inputStream);
             out = new PrintWriter(outputStream, true);
 
             //verifica se l'utente è già registrato (si è dichiarato publisher o subscriber)
-            if (client == null){
+            if (client == null)
+            {
                 //se l'utente non è già registrato, esso si deve registrare prima di proseguire
                 while(client == null && !clientSocket.isClosed())
                 {
@@ -58,9 +60,11 @@ public class ClientHandler extends Thread
                             }
                         }
                         //il client si registra come "subscriber"
-                        else if (inputLine.startsWith("subscribe ")) {
+                        else if (inputLine.startsWith("subscribe "))
+                        {
                             String topicName = inputLine.substring(10).trim();
-                            if (!topicName.isEmpty()) {
+                            if (!topicName.isEmpty())
+                            {
                                 //crea un nuovo subscriber associato al topic specificato
                                 client = new Subscriber(clientSocket, Server.getOrCreateTopic(topicName));
                                 client.registerOutputAndInput();
@@ -87,7 +91,6 @@ public class ClientHandler extends Thread
                         {
                             out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
                         }
-
                     }
                     catch(NoSuchElementException e)
                     {
@@ -96,35 +99,54 @@ public class ClientHandler extends Thread
                     }
                 }
             }
-            if (this.getClient() != null) {
+            if (this.getClient() != null)
+            {
                 //ciclo per gestire ulteriori comandi dopo la registrazione
-                while (running && in.hasNextLine()) {
-                    synchronized (Server.lock) {        //lock per evitare problemi durante un context switch del thread
-                                                        // serverhandler prima che modifichi la variabile InInspection
-                                                        // (sincronizzazione per la variabile InInspection che viene modificta da un thread e letta da un altro)
+                while (running && in.hasNextLine())
+                {
+                    //utilizzo il lock per evitare problemi durante un possibile context-switch nel momento della modifica
+                    //del valore della variabile booleana "InInspection" da true a false e viceversa
+                    synchronized (Server.lock)
+                    {
                         String inputLine = in.nextLine();
-                        if (!client.getTopic().isInInspection()) {
+                        if (!client.getTopic().isInInspection())
+                        {
                             client.handleCommand(inputLine);
-                        } else {
+                        }
+                        else
+                        {
                             //gestione dei comandi durante un'ispezione
-                            if (!inputLine.equals("quit")) {
+                            if (!inputLine.equals("quit"))
+                            {
                                 client.handleCommand("inspect");
                                 client.addInspectMessage(inputLine);
-                            } else {
+                            }
+                            else
+                            {
                                 notifyQuit("#inspect");
                                 out.println("Il comando quit non si può utilizzare durante l'inspect...");
                             }
                         }
-
                         //disconnessione del client se invia il comando "quit" e non è in ispezione
-                        if (inputLine.equals("quit") && !client.getTopic().isInInspection()) {
-                            System.out.println("Client disconnesso");
+                        if (inputLine.equals("quit") && !client.getTopic().isInInspection())
+                        {
+                            //mi chiedo se l'oggetto "client" è istanza di Publisher per avvisare l'utente se si è disconnesso un publisher o un subscriber
+                            if (client instanceof Publisher)
+                            {
+                                System.out.println("Publisher disconnesso");
+                            }
+                            else
+                            {
+                                System.out.println("Subscriber disconnesso");
+                            }
                             notifyQuit("#closeClient");
                             break;
                         }
                     }
                 }
-            } else {
+            }
+            else
+            {
                 //non stampo sul server il fatto che il client si sia collegato, in quanto non si è registrato
                 clientSocket.close();
             }
@@ -164,6 +186,7 @@ public class ClientHandler extends Thread
         running = false;
         try
         {
+            //rimuovo il client connesso alla lista di client
             synchronized (Server.listClient)
             {
                 Server.listClient.removeIf(ClientHandler -> ClientHandler.getSocket().equals(clientSocket));
@@ -185,7 +208,8 @@ public class ClientHandler extends Thread
         return this.client;
     }
 
-    public Socket getSocket() {
+    public Socket getSocket()
+    {
         return this.clientSocket;
     }
 }

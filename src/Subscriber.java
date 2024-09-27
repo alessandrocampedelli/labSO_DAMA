@@ -69,8 +69,7 @@ public class Subscriber extends User
         {
             out.println("Il topic è in ispezione. Il messaggio verrà elaborato dal server una volta terminata la fase di ispezione");
         }
-        //caso in cui l'utente ho scrive un comando inesistente, oppure se scrive quit
-        //nel caso del quit la stampa corretta avviene nella classe Client.java
+        //caso in cui l'utente scrive un comando inesistente scrive "quit" (la stampa corretta avviene nella classe Client.java)
         else if(!inputLine.equals("quit"))
         {
             out.println("Comando sconosciuto.");

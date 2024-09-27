@@ -10,19 +10,18 @@ public class Server
     public static final List<Topic> topics = new ArrayList<>();
     public static final List<ClientHandler> listClient = new ArrayList<>();
     public static final Object lock = new Object();
-    private static final int DEFAULT_PORT = 9000;
 
     public static void main(String[] args)
     {
-        /*//per inserire manualmente la porta
-        if (args.length != 1) {
+        //l'utente avvia il Server indicando il numero di porta del Server
+        if (args.length != 1)
+        {
             System.out.println("Utilizzo: java Server <porta>");
             return;
         }
-        */
 
-        int port = DEFAULT_PORT;
-
+        //i dati appena inseriti dall'utente
+        int port = Integer.parseInt(args[0]);
         try
         {
             //crea una socket del server sulla porta specificata
@@ -50,30 +49,33 @@ public class Server
                 }
                 catch (IOException e)
                 {
-                    //e.printStackTrace();
                     //quando chiudo il server l'accept non riesce più ad eseguire in quanto la serversocket è stata chiusa
                     if (!serverSocket.isClosed())
                     {
-                        System.err.println("Errore durante l'accettazione della connessione: " + e.getMessage()); //stampa un messaggio di errore se qualcosa va storto nell'accettare la connessione
+                        //stampa un messaggio di errore se qualcosa va storto nell'accettare la connessione
+                        System.err.println("Errore durante l'accettazione della connessione: " + e.getMessage());
                     }
                     break;
                 }
             }
 
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
     //metodo che crea o recupera un topic esistente
     public static Topic getOrCreateTopic(String name)
     {
-        synchronized (topics) {
+        synchronized (topics)
+        {
             //cerco se il topic esiste già
-            for (Topic topic : topics) {
-                if (topic.getName().equals(name)) {
+            for (Topic topic : topics)
+            {
+                if (topic.getName().equals(name))
+                {
                     //ritorna il topic esistente se presente
                     return topic;
                 }
@@ -81,7 +83,6 @@ public class Server
             //crea un nuovo topic e lo aggiunge alla lista se non esiste
             Topic newTopic = new Topic(name);
             topics.add(newTopic);
-
             return newTopic;
         }
     }
@@ -89,15 +90,20 @@ public class Server
     //metodo che mostra la lista dei topic attualmente disponibili
     public static void showTopics(PrintWriter out)
     {
-        synchronized (topics) {
+        synchronized (topics)
+        {
             //controlla se ci sono topic creati
-            if (!topics.isEmpty()) {
+            if (!topics.isEmpty())
+            {
                 out.println(topics.size() == 1 ? ("Un solo topic creato al momento: ") : (topics.size() + " topics creati al momento: ")); //mostra un messaggio diverso se c'è un solo topic o più di uno
                 //stampo il nome di ciascun topic
-                for (Topic topic : topics) {
+                for (Topic topic : topics)
+                {
                     out.println("- " + topic.getName());
                 }
-            } else {
+            }
+            else
+            {
                 out.println("Non è presente alcun topic creato.");
             }
         }

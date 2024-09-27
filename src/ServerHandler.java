@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.util.List;
 import java.util.Scanner;
 
 public class ServerHandler extends Thread
@@ -48,10 +47,16 @@ public class ServerHandler extends Thread
                     String topicName = userInput.split(" ", 2)[1].trim();
                     Topic topic = getTopicByName(topicName);
                     //cerco se il topic inserito esiste oppure no
-                    if (topic == null) {
+                    if (topic == null)
+                    {
                         System.out.println("Errore: Topic '" + topicName + "' non trovato.");
-                    } else {
-                        synchronized (Server.lock) {        //per evitare problemi nel context switch quando il client legge la condizione dell'if isInInspection
+                    }
+                    else
+                    {
+                        //utilizzo il lock per evitare problemi durante un possibile context-switch nel momento della lettura
+                        //del valore della variabile booleana "IsInInspection" da true a false e viceversa
+                        synchronized (Server.lock)
+                        {
                             //imposto il topic come in ispezione (le richieste dei client verranno eseguite quando la variabile torna false)
                             topic.setInInspection(true);
                         }
@@ -60,7 +65,8 @@ public class ServerHandler extends Thread
                         //metodo che permette di avviare la sessione interattiva
                         sessioneInterattiva(topic);
                     }
-                } else
+                }
+                else
                 {
                     System.out.println("Comando non riconosciuto.");
                 }
@@ -83,17 +89,23 @@ public class ServerHandler extends Thread
         //sincronizzo l'accesso alla lista dei client
         synchronized (Server.listClient)
         {
+            //ciclo per tutti i client connessi al server
             for (ClientHandler client : Server.listClient)
             {
                 if(client.getClient() == null)
                 {
-                    if(message.equals("#closeServer")) {
-                        try {
+                    //mi chiedo se il messaggio è uguale al comando di escape "#closeServer"
+                    if(message.equals("#closeServer"))
+                    {
+                        try
+                        {
                             //crea un PrintWriter per inviare il messaggio al client specifico
                             PrintWriter out = new PrintWriter(client.getSocket().getOutputStream(), true);
                             //invio il messaggio
                             out.println(message);
-                        } catch (IOException e) {
+                        }
+                        catch (IOException e)
+                        {
                             System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
                         }
                     }
@@ -152,7 +164,6 @@ public class ServerHandler extends Thread
         {
             System.err.println("Errore durante la chiusura del ServerSocket: " + e.getMessage());
         }
-
         //stampo in console che il server si è scollegato
         System.out.println("Server scollegato...");
     }
@@ -165,7 +176,7 @@ public class ServerHandler extends Thread
         {
             for (Topic topic : Server.topics)
             {
-                //ricerbo il nome del topic dal suo nome
+                //ricerco il nome del topic dal suo nome nella lista dei topic possibili
                 if (topic.getName().equals(name))
                 {
                     //ritorna il topic se presente
@@ -224,15 +235,19 @@ public class ServerHandler extends Thread
                         }
                     }
                     //se ho trovato l'ID elimino il messaggio altrimenti avviso l'utente che l'ID inserito non esisteva
-                    if(trovato){
-                        //una volta trovato il messaggio lo elimino sia dalla lista di messaggi del topic, sia dalla lista dei messaggi
-                        //del publisher che aveva inviato quel messaggio
+                    if(trovato)
+                    {
+                        //una volta trovato il messaggio lo elimino sia dalla lista di messaggi del topic, sia dalla
+                        //lista dei messaggi inviati del publisher (in questo modo con il comando list, il messaggio non è più presente)
                         topic.deleteMessage(messageId);
-                        synchronized (Server.listClient) {
-                            for (ClientHandler clientHandler : Server.listClient) {
-                                if (clientHandler.getClient() instanceof Publisher) {
+                        synchronized (Server.listClient)
+                        {
+                            for (ClientHandler clientHandler : Server.listClient)
+                            {
+                                if (clientHandler.getClient() instanceof Publisher)
+                                {
                                     Publisher p = (Publisher) clientHandler.getClient();
-                                    //vado ad eliminare nella lista del publisher il messaggio con id corrispondente
+                                    //vado ad eliminare nella lista del publisher il messaggio con l'ID corrispondente
                                     p.getMessaggiUtente().removeIf(m -> m.getId() == messageId);
                                     notifyUsers("#delete" + messageId, topic);
                                 }
@@ -273,8 +288,10 @@ public class ServerHandler extends Thread
     //metodo per elaborare tutti i messaggi di ispezione per tutti i client
     private void processAllInspectMessage()
     {
-        synchronized (Server.listClient) {
-            for (ClientHandler client : Server.listClient) {
+        synchronized (Server.listClient)
+        {
+            for (ClientHandler client : Server.listClient)
+            {
                 //elenco dei messaggi di ispezione per ogni client
                 client.getClient().processInspectMessages();
             }

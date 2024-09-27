@@ -53,7 +53,8 @@ public class Topic
     //metodo che aggiunge un subscriber alla lista dei subscriber
     public void subscribe(Subscriber client)
     {
-        synchronized (subscribers) {
+        synchronized (subscribers)
+        {
             subscribers.add(client);
         }
     }
@@ -61,8 +62,10 @@ public class Topic
     //metodo che notifica tutti i subscriber con un nuovo messaggio
     private void notifySubscribers(Message message)
     {
-        synchronized (subscribers) {
-            for (Subscriber client : subscribers) {
+        synchronized (subscribers)
+        {
+            for (Subscriber client : subscribers)
+            {
                 //invia il messaggio a ciascun subscriber connesso
                 client.sendMessage(message);
             }
