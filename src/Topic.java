@@ -38,16 +38,20 @@ public class Topic
     //metodo che aggiunge un messaggio al topic e notifica tutti i subscriber
     public synchronized void addMessage(Message message)
     {
-        //aggiunge il messaggio alla lista dei messaggi
-        messages.add(message);
-        //notifica tutti i subscriber connessi del nuovo messaggio
-        notifySubscribers(message);
+        synchronized (messages) {
+            //aggiunge il messaggio alla lista dei messaggi
+            messages.add(message);
+            //notifica tutti i subscriber connessi del nuovo messaggio
+            notifySubscribers(message);
+        }
     }
 
     //metodo che restituisce tutti i messaggi del topic
-    public synchronized List<Message> getMessages()
+    public List<Message> getMessages()
     {
-        return new ArrayList<>(messages);
+        synchronized (messages) {
+            return new ArrayList<>(messages);
+        }
     }
 
     //metodo che aggiunge un subscriber alla lista dei subscriber

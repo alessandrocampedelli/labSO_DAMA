@@ -42,8 +42,10 @@ public class Publisher extends User
         {
             //estrazione del testo del messaggio dal comando
             String messageText = inputLine.substring(5);
-            Message message = new Message(messageText);
-
+            Message message;
+            synchronized (Message.counter) {
+                message = new Message(messageText);
+            }
             if (currentTopic != null)
             {
                 //verifica che il messaggio non sia vuoto
@@ -97,19 +99,17 @@ public class Publisher extends User
             //controllo se il publisher è registrato a un topic
             if (currentTopic != null)
             {
-                //verifica se ci sono messaggi pubblicati sul topic
-                if(!currentTopic.getMessages().isEmpty())
-                {
-                    //visualizzazione della lista di tutti i messaggi pubblicati sul topic
-                    out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio pubblicato": currentTopic.getMessages().size()+" messaggi pubblicati")+" sul topic "+currentTopic.getName().toUpperCase()+":");
-                    for (Message message : currentTopic.getMessages())
-                    {
-                        out.println(message);
+                synchronized (currentTopic.getMessages()) {
+                    //verifica se ci sono messaggi pubblicati sul topic
+                    if (!currentTopic.getMessages().isEmpty()) {
+                        //visualizzazione della lista di tutti i messaggi pubblicati sul topic
+                        out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio pubblicato" : currentTopic.getMessages().size() + " messaggi pubblicati") + " sul topic " + currentTopic.getName().toUpperCase() + ":");
+                        for (Message message : currentTopic.getMessages()) {
+                            out.println(message);
+                        }
+                    } else {
+                        out.println("Non è stato ancora pubblicato alcun messaggio sul topic " + currentTopic.getName().toUpperCase());
                     }
-                }
-                else
-                {
-                    out.println("Non è stato ancora pubblicato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                 }
             }
             else

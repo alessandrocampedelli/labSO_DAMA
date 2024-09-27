@@ -5,9 +5,12 @@ import java.util.Scanner;
 public class Client
 {
     private static volatile Boolean flag = true;
+    private static final String serverIp = "127.0.0.1";
+    private static final int serverPort = 9000;
 
     public static void main(String[] args)
     {
+        /*
         //l'utente avvia il client indicando l'indirizzo IP e il numero di porta del Server
         if (args.length != 2)
         {
@@ -18,7 +21,7 @@ public class Client
         //i dati appena inseriti dall'utente
         String serverIp = args[0];
         int serverPort = Integer.parseInt(args[1]);
-
+        */
         try (Socket socket = new Socket(serverIp, serverPort);
              //oggetto di tipo "PrintWriter" per inviare i dati al server
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

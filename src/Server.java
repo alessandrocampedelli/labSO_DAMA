@@ -10,9 +10,11 @@ public class Server
     public static final List<Topic> topics = new ArrayList<>();
     public static final List<ClientHandler> listClient = new ArrayList<>();
     public static final Object lock = new Object();
+    private static final int port = 9000;
 
     public static void main(String[] args)
     {
+        /*
         //l'utente avvia il Server indicando il numero di porta del Server
         if (args.length != 1)
         {
@@ -22,6 +24,7 @@ public class Server
 
         //i dati appena inseriti dall'utente
         int port = Integer.parseInt(args[0]);
+         */
         try
         {
             //crea una socket del server sulla porta specificata

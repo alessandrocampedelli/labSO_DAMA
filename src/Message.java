@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter;
 public class Message
 {
     //contatore statico per generare ID univoci per ogni messaggio
-    private static int counter = 0;
+    public static Integer counter = 0;
     //l'ID univoco del messaggio
     private final int id;
     //il testo del messaggio

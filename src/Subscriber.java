@@ -39,19 +39,17 @@ public class Subscriber extends User
         {
             if (currentTopic != null)
             {
-                //verifica se ci sono messaggi pubblicati sul topic
-                if(!currentTopic.getMessages().isEmpty())
-                {
-                    //visualizzazione della lista di tutti i messaggi pubblicati sul topic
-                    out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio pubblicato": currentTopic.getMessages().size()+" messaggi pubblicati")+" sul topic "+currentTopic.getName().toUpperCase()+":");
-                    for (Message message : currentTopic.getMessages())
-                    {
-                        out.println(message);
+                synchronized (currentTopic.getMessages()) {
+                    //verifica se ci sono messaggi pubblicati sul topic
+                    if (!currentTopic.getMessages().isEmpty()) {
+                        //visualizzazione della lista di tutti i messaggi pubblicati sul topic
+                        out.println((currentTopic.getMessages().size() == 1 ? "Un messaggio pubblicato" : currentTopic.getMessages().size() + " messaggi pubblicati") + " sul topic " + currentTopic.getName().toUpperCase() + ":");
+                        for (Message message : currentTopic.getMessages()) {
+                            out.println(message);
+                        }
+                    } else {
+                        out.println("Non è stato ancora pubblicato alcun messaggio sul topic " + currentTopic.getName().toUpperCase());
                     }
-                }
-                else
-                {
-                    out.println("Non è stato ancora pubblicato alcun messaggio sul topic "+currentTopic.getName().toUpperCase());
                 }
             }
             else
