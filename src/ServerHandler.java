@@ -28,7 +28,7 @@ public class ServerHandler extends Thread
             {
                 //conversione del comando in minuscolo per uniformità
                 userInput = userInput.toLowerCase();
-                if (userInput.startsWith("quit"))
+                if (userInput.equals("quit"))
                 {
                     //metodo per far terminare l'esecuzione del server e notifichiamo tutti i client dell'accaduto
                     notifyUsers("#closeServer", null);
@@ -36,7 +36,7 @@ public class ServerHandler extends Thread
                     break;
                 }
                 //gestione del comando "show" per mostrare tutti i topic disponibili a cui è possibile collegarsi
-                else if (userInput.startsWith("show"))
+                else if (userInput.equals("show"))
                 {
                     Server.showTopics(out);
                 }
@@ -49,7 +49,7 @@ public class ServerHandler extends Thread
                     //cerco se il topic inserito esiste oppure no
                     if (topic == null)
                     {
-                        System.out.println("Errore: Topic '" + topicName + "' non trovato.");
+                        System.out.println("ERRORE: Topic '" + topicName + "' non trovato.");
                     }
                     else
                     {
@@ -66,9 +66,12 @@ public class ServerHandler extends Thread
                         sessioneInterattiva(topic);
                     }
                 }
-                else
+                else if(userInput.equals("inspect"))
                 {
-                    System.out.println("Comando non riconosciuto.");
+                    System.out.println("ERRORE: devi inserire un topic esistente");
+                }else
+                {
+                    System.out.println("ERRORE: comando non riconosciuto.");
                 }
             }
         }
@@ -200,7 +203,7 @@ public class ServerHandler extends Thread
                 //conversione del comando in minuscolo per uniformità
                 userInput = userInput.toLowerCase();
                 //gestione del comando ":listall" per mostrare tutti i messaggi del topic
-                if (userInput.startsWith(":listall"))
+                if (userInput.equals(":listall"))
                 {
                     if (topic.getMessages().isEmpty())
                     {
@@ -268,7 +271,7 @@ public class ServerHandler extends Thread
                     }
                 }
                 //gestione del comando ":end" per uscire dalla fase di ispezione del topic
-                else if (userInput.startsWith(":end"))
+                else if (userInput.equals(":end"))
                 {
                     //comando per terminare la sessione interattiva
                     notifyUsers("#session_end", topic);
@@ -282,7 +285,7 @@ public class ServerHandler extends Thread
                 }
                 else
                 {
-                    System.out.println("Comando non riconosciuto nella sessione interattiva.");
+                    System.out.println("ERRORE: comando non riconosciuto nella sessione interattiva.");
                 }
             }
         }

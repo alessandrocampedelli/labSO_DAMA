@@ -40,11 +40,13 @@ public class Client
             //ciclo per leggere l'input dell'utente da tastiera e inviarlo al server
             while ((userInput = stdIn.nextLine()) != null)
             {
+                userInput = userInput.trim().toLowerCase();
                 out.println(userInput);
                 if (userInput.equals("quit"))
                 {
                     listenerThread.join();
-                    if (flag == false)
+                    //caso in cui flag sia false
+                    if (!flag)
                     {
                         break;
                     }

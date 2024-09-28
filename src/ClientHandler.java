@@ -56,7 +56,7 @@ public class ClientHandler extends Thread
                             }
                             else
                             {
-                                out.println("Errore: il topic non è specificato. Riprova");
+                                out.println("ERRORE: il topic non è specificato. Riprova");
                             }
                         }
                         //il client si registra come "subscriber"
@@ -73,7 +73,7 @@ public class ClientHandler extends Thread
                             }
                             else
                             {
-                                out.println("Errore: il topic non è specificato. Riprova");
+                                out.println("ERRORE: il topic non è specificato. Riprova");
                             }
                         }
                         //comando "show" per visualizzare i topic disponibili
@@ -88,9 +88,9 @@ public class ClientHandler extends Thread
                             break;
                         }
                         else if(inputLine.equals("publish") || inputLine.equals("subscribe")){
-                            out.println("Errore: il topic non è specificato. Riprova");
+                            out.println("ERRORE: il topic non è specificato. Riprova");
                         }else{
-                            out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
+                            out.println("ERRORE: prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
                         }
                     }
                     catch(NoSuchElementException e)
@@ -125,21 +125,15 @@ public class ClientHandler extends Thread
                             else
                             {
                                 notifyQuit("#inspect");
-                                out.println("Il comando quit non si può utilizzare durante l'inspect...");
+                                out.println("ERRORE: il comando quit non si può utilizzare durante la fase di ispezione attiva.");
                             }
                         }
                         //disconnessione del client se invia il comando "quit" e non è in ispezione
                         if (inputLine.equals("quit") && !client.getTopic().isInInspection())
                         {
                             //mi chiedo se l'oggetto "client" è istanza di Publisher per avvisare l'utente se si è disconnesso un publisher o un subscriber
-                            if (client instanceof Publisher)
-                            {
-                                System.out.println("Publisher disconnesso");
-                            }
-                            else
-                            {
-                                System.out.println("Subscriber disconnesso");
-                            }
+                            System.out.println((client instanceof Publisher ? "Un PUBLISHER" : "Un SUBSCRIBER")
+                                    + " registrato al topic " + client.currentTopic.getName().toUpperCase() + " si è disconnesso");
                             notifyQuit("#closeClient");
                             break;
                         }

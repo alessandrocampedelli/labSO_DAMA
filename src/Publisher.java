@@ -18,7 +18,7 @@ public class Publisher extends User
     public void handleCommand(String inputLine)
     {
         //conversione del comando in minuscolo per uniformità
-        inputLine = inputLine.toLowerCase();
+        inputLine = inputLine.toLowerCase().trim();
         //gestione del comando "publish" per registrarsi ad un topic
         if (inputLine.startsWith("publish "))
         {
