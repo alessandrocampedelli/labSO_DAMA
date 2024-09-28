@@ -5,66 +5,64 @@ import java.util.Scanner;
 public class Client
 {
     private static volatile Boolean flag = true;
-    private static final String serverIp = "127.0.0.1";
-    private static final int serverPort = 9000;
+    //private static final String serverIp = "127.0.0.1";
+    //private static final int serverPort = 9000;
 
     public static void main(String[] args)
     {
-        /*
+
         //l'utente avvia il client indicando l'indirizzo IP e il numero di porta del Server
         if (args.length != 2)
         {
-            System.out.println("Utilizzo: java Client <indirizzo_server> <porta_server>");
+            System.out.println("ERRORE: devi utilizzare la seguente sintassi: --> java Client <indirizzo_server> <porta_server>");
             return;
         }
 
         //i dati appena inseriti dall'utente
-        String serverIp = args[0];
-        int serverPort = Integer.parseInt(args[1]);
-        */
-        try (Socket socket = new Socket(serverIp, serverPort);
-             //oggetto di tipo "PrintWriter" per inviare i dati al server
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-             //oggetto di tipo "Scanner" per ricevere dati dal server
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             //oggetto di tipo "Scanner" per leggere input dell'utente da tastiera
-             Scanner stdIn = new Scanner(System.in)) {
+        try {
+            String serverIp = args[0];
+            int serverPort = Integer.parseInt(args[1]);
 
-            System.out.println("\nBENVENUTO! Ti sei connesso con successo al server avente indirizzo IP " + serverIp + " e porta " + serverPort);
-            System.out.println("\nEcco i comandi da utilizzare in fase di registrazione:\n- show: \t\t\t\t\t\t  comando per vedere i topic già creati\n" +
-                    "- publish/subscribe <nome_topic>: comando per registrarti al server come publisher/subscriber\n");
+            // Apertura della connessione con il server e gestione delle risorse con try-with-resources
+            try (Socket socket = new Socket(serverIp, serverPort);
+                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                 Scanner stdIn = new Scanner(System.in)) {
 
-            Thread listenerThread = startListenerThread(socket,in);
-            String userInput;
+                System.out.println("\nBENVENUTO! Ti sei connesso con successo al server avente indirizzo IP " + serverIp + " e porta " + serverPort);
+                System.out.println("\nEcco i comandi da utilizzare in fase di registrazione:\n- show: \t\t\t\t\t\t  comando per vedere i topic già creati\n" +
+                        "- publish/subscribe <nome_topic>: comando per registrarti al server come publisher/subscriber\n");
 
-            //ciclo per leggere l'input dell'utente da tastiera e inviarlo al server
-            while ((userInput = stdIn.nextLine()) != null)
-            {
-                userInput = userInput.trim().toLowerCase();
-                out.println(userInput);
-                if (userInput.equals("quit"))
-                {
-                    listenerThread.join();
-                    //caso in cui flag sia false
-                    if (!flag)
-                    {
-                        break;
-                    }
-                    if(!listenerThread.isAlive())
-                    {
-                        listenerThread = startListenerThread(socket,in);
+                Thread listenerThread = startListenerThread(socket, in);
+                String userInput;
+
+                // Ciclo per leggere l'input dell'utente da tastiera e inviarlo al server
+                while ((userInput = stdIn.nextLine()) != null) {
+                    userInput = userInput.trim().toLowerCase();
+                    out.println(userInput);
+
+                    if (userInput.equals("quit")) {
+                        listenerThread.join();
+
+                        if (!flag) {
+                            break;
+                        }
+
+                        if (!listenerThread.isAlive()) {
+                            listenerThread = startListenerThread(socket, in);
+                        }
                     }
                 }
             }
-        }
-        catch (IOException e)
-        {
-            System.out.println("Impossibile connettersi al server " + serverIp + ":" + serverPort);
-        }
-        catch (InterruptedException e)
-        {
+
+        } catch (NumberFormatException e) {
+            System.out.println("ERRORE: numero di porta non corretto");
+        } catch (IOException e) {
+            System.out.println("Impossibile connettersi al server " + args[0] + ":" + args[1]);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public static Thread startListenerThread(Socket socket, BufferedReader in)

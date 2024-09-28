@@ -10,23 +10,25 @@ public class Server
     public static final List<Topic> topics = new ArrayList<>();
     public static final List<ClientHandler> listClient = new ArrayList<>();
     public static final Object lock = new Object();
-    private static final int port = 9000;
+    //private static final int port = 9000;
 
     public static void main(String[] args)
     {
-        /*
+
         //l'utente avvia il Server indicando il numero di porta del Server
         if (args.length != 1)
         {
-            System.out.println("Utilizzo: java Server <porta>");
+            System.out.println("ERRORE: devi utilizzare la seguente sintassi --> java Server <porta>");
             return;
         }
 
-        //i dati appena inseriti dall'utente
-        int port = Integer.parseInt(args[0]);
-         */
+
         try
         {
+            //i dati appena inseriti dall'utente
+            int port = Integer.parseInt(args[0]);
+            if(port != 9000)
+                throw new NumberFormatException();
             //crea una socket del server sulla porta specificata
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server in ascolto sulla porta " + port);
@@ -63,9 +65,11 @@ public class Server
             }
 
         }
-        catch (Exception e)
+        catch (NumberFormatException e)
         {
-            e.printStackTrace();
+            System.out.println("ERRORE: il numero di porta a cui ci si deve connettere è la porta 9000");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -43,7 +43,7 @@ public class Publisher extends User
             //estrazione del testo del messaggio dal comando
             String messageText = inputLine.substring(5);
             Message message;
-            synchronized (Message.counter) {
+            synchronized (Message.lock) {
                 message = new Message(messageText);
             }
             if (currentTopic != null)
