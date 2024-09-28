@@ -39,14 +39,13 @@ public class Client {
                 while ((userInput = stdIn.nextLine()) != null) {
                     userInput = userInput.trim().toLowerCase();
                     out.println(userInput);
-
                     if (userInput.equals("quit")) {
+
                         listenerThread.join();
 
                         if (!flag.getFlag()) {
                             break;
                         }
-
                         if (!listenerThread.isAlive()) {
                             listenerThread = startListenerThread(socket, in, flag);
                         }

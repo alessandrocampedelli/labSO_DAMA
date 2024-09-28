@@ -276,7 +276,7 @@ public class ServerHandler extends Thread
                     //comando per terminare la sessione interattiva
                     notifyUsers("#session_end", topic);
                     //l'elenco dei messaggi di ispezione di tutti i client mentre il server era in fase di ispezione
-                    this.processAllInspectMessage();
+                    this.processAllInspectMessage(topic);
                     System.out.println("Sessione interattiva per il topic " + topic.getName().toUpperCase() + " chiusa");
                     //imposto il topic come il server non è più in ispezione
                     topic.setInInspection(false);
@@ -296,14 +296,16 @@ public class ServerHandler extends Thread
     }
 
     //metodo per elaborare tutti i messaggi di ispezione per tutti i client
-    private void processAllInspectMessage()
+    private void processAllInspectMessage(Topic topic)
     {
         synchronized (Server.listClient)
         {
             for (ClientHandler client : Server.listClient)
             {
-                //elenco dei messaggi di ispezione per ogni client
-                client.getClient().processInspectMessages();
+                if(client.getClient() != null && client.getClient().getTopic() == topic) {
+                    //elenco dei messaggi di ispezione per ogni client
+                    client.getClient().processInspectMessages();
+                }
             }
         }
     }
