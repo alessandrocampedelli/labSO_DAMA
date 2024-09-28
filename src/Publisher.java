@@ -59,12 +59,12 @@ public class Publisher extends User
                 }
                 else
                 {
-                    out.println("Errore: contenuto del messaggio non presente.");
+                    out.println("ERRORE: contenuto del messaggio non presente.");
                 }
             }
             else
             {
-                out.println("Prima di inviare un messaggio devi prima specificare il topic.");
+                out.println("ERRORE: prima di inviare un messaggio devi prima specificare il topic.");
             }
         }
         //gestione del comando "list" per mostrare i messaggi inviati da questo client
@@ -90,7 +90,7 @@ public class Publisher extends User
             }
             else
             {
-                out.println("Per poter riceve la lista dei tuoi messaggi inviati devi prima iscriverti a un topic.");
+                out.println("ERRORE: per poter riceve la lista dei tuoi messaggi inviati devi prima iscriverti a un topic.");
             }
         }
         //gestione del comando "listall" per mostrare tutti i messaggi pubblicati sul topic da tutti i client
@@ -114,7 +114,7 @@ public class Publisher extends User
             }
             else
             {
-                out.println("Non sei iscritto o non stai pubblicando su alcun topic.");
+                out.println("ERRORE: non sei iscritto o non stai pubblicando su alcun topic.");
             }
         }
         //gestione del comando "show" per mostrare tutti i topic disponibili a cui è possibile collegarsi
@@ -131,9 +131,9 @@ public class Publisher extends User
         else if(!inputLine.equals("quit"))
         {
             if(inputLine.equals("send")){
-                out.println("Errore: contenuto del messaggio non presente.");
+                out.println("ERRORE: contenuto del messaggio non presente.");
             }else{
-                out.println("Comando sconosciuto.");
+                out.println("ERRORE: comando sconosciuto.");
             }
         }
     }

@@ -54,7 +54,7 @@ public class Subscriber extends User
             }
             else
             {
-                out.println("Non sei iscritto o non stai pubblicando su alcun topic.");
+                out.println("ERRORE: non sei iscritto o non stai pubblicando su alcun topic.");
             }
         }
         //gestione del comando "show" per mostrare tutti i topic disponibili a cui è possibile collegarsi
@@ -70,7 +70,7 @@ public class Subscriber extends User
         //caso in cui l'utente scrive un comando inesistente scrive "quit" (la stampa corretta avviene nella classe Client.java)
         else if(!inputLine.equals("quit"))
         {
-            out.println("Comando sconosciuto.");
+            out.println("ERRORE: comando sconosciuto.");
         }
     }
 
