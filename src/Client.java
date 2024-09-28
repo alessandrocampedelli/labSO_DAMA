@@ -2,27 +2,26 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client
-{
-    private static volatile Boolean flag = true;
-    //private static final String serverIp = "127.0.0.1";
-    //private static final int serverPort = 9000;
-
+public class Client {
+    private static final String serverIp = "127.0.0.1";
+    private static final int serverPort = 9000;
     public static void main(String[] args)
     {
-
+        /*
         //l'utente avvia il client indicando l'indirizzo IP e il numero di porta del Server
         if (args.length != 2)
         {
             System.out.println("ERRORE: devi utilizzare la seguente sintassi: --> java Client <indirizzo_server> <porta_server>");
             return;
         }
-
+        */
+        Flag flag = new Flag(true);
         //i dati appena inseriti dall'utente
         try {
+            /*
             String serverIp = args[0];
             int serverPort = Integer.parseInt(args[1]);
-
+            */
             // Apertura della connessione con il server e gestione delle risorse con try-with-resources
             try (Socket socket = new Socket(serverIp, serverPort);
                  PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -33,7 +32,7 @@ public class Client
                 System.out.println("\nEcco i comandi da utilizzare in fase di registrazione:\n- show: \t\t\t\t\t\t  comando per vedere i topic già creati\n" +
                         "- publish/subscribe <nome_topic>: comando per registrarti al server come publisher/subscriber\n");
 
-                Thread listenerThread = startListenerThread(socket, in);
+                Thread listenerThread = startListenerThread(socket, in, flag);
                 String userInput;
 
                 // Ciclo per leggere l'input dell'utente da tastiera e inviarlo al server
@@ -44,12 +43,12 @@ public class Client
                     if (userInput.equals("quit")) {
                         listenerThread.join();
 
-                        if (!flag) {
+                        if (!flag.getFlag()) {
                             break;
                         }
 
                         if (!listenerThread.isAlive()) {
-                            listenerThread = startListenerThread(socket, in);
+                            listenerThread = startListenerThread(socket, in, flag);
                         }
                     }
                 }
@@ -65,7 +64,7 @@ public class Client
 
     }
 
-    public static Thread startListenerThread(Socket socket, BufferedReader in)
+    public static Thread startListenerThread(Socket socket, BufferedReader in, Flag flag)
     {
         //thread per gestire la ricezione dei messaggi dal server
         Thread listenerThread = new Thread(() ->
@@ -80,20 +79,20 @@ public class Client
                     if (response.equals("#closeServer"))
                     {
                         System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
-                        flag = false;
+                        flag.setFlag(false);
                         System.exit(0);
                         break;
                     }
                     //caso in cui il client avvisa che si sta disconnettendo
                     else if (response.equals("#closeClient"))
                     {
-                        flag = false;
+                        flag.setFlag(false);
                         System.out.println("Disconnesione in corso...");
                     }
                     //caso in cui il è avviata la fase di ispezione da parte del server
                     else if (response.equals("#inspect"))
                     {
-                        flag = true;
+                        flag.setFlag(true);
                         break;
                     }
                     //caso in cui viene avvisato l'utente con l'ID del messaggio eliminato dal server
@@ -135,5 +134,19 @@ public class Client
         //avvio del thread
         listenerThread.start();
         return listenerThread;
+    }
+    private static class Flag{
+        private volatile Boolean flag;
+
+        public Flag(Boolean flag){
+            this.flag = flag;
+        }
+
+        public Boolean getFlag(){
+            return this.flag;
+        }
+        public void setFlag(Boolean val){
+            this.flag = val;
+        }
     }
 }

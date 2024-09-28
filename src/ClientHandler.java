@@ -9,7 +9,6 @@ public class ClientHandler extends Thread
 {
     //la socket associata al client
     private final Socket clientSocket;
-    private ServerSocket serversocket;
     private User client;
     //variabile booleana per sapere se il server è in ispezione oppure no
     private volatile boolean running = true;
@@ -17,10 +16,9 @@ public class ClientHandler extends Thread
     private PrintWriter out;
 
     //metodo costruttore che permette l'inizializzazione della socket e della lista dei client connessi
-    public ClientHandler(Socket socket, ServerSocket serversocket)
+    public ClientHandler(Socket socket)
     {
         this.clientSocket = socket;
-        this.serversocket = serversocket;
     }
 
     @Override
