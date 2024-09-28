@@ -130,7 +130,11 @@ public class Publisher extends User
         //caso in cui l'utente scrive un comando inesistente scrive "quit" (la stampa corretta avviene nella classe Client.java)
         else if(!inputLine.equals("quit"))
         {
-            out.println("Comando sconosciuto.");
+            if(inputLine.equals("send")){
+                out.println("Errore: contenuto del messaggio non presente.");
+            }else{
+                out.println("Comando sconosciuto.");
+            }
         }
     }
 

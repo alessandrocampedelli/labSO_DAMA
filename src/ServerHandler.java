@@ -223,7 +223,14 @@ public class ServerHandler extends Thread
                     boolean trovato = false;
                     //estraggo l'ID del messaggio e converto l'ID in intero
                     String messageIdStr = userInput.split(" ", 2)[1].trim();
-                    int messageId = Integer.parseInt(messageIdStr);
+                    int messageId;
+                    //controllo che l'id inserito sia un intero
+                    try{
+                        messageId = Integer.parseInt(messageIdStr);
+                    }catch (NumberFormatException e){
+                        System.err.println("L'id del messaggio deve essere un numero intero");
+                        continue;
+                    }
                     //verifica se il messaggio con l'ID specificato esiste e lo elimina
                     for (Message message : topic.getMessages())
                     {
@@ -281,7 +288,7 @@ public class ServerHandler extends Thread
         }
         catch (Exception e)
         {
-            System.err.println("Errore durante la lettura dell'input nella sessione interattiva: " + e.getMessage());
+            System.err.println("ERRORE: "+e.getMessage());
         }
     }
 

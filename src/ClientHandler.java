@@ -87,8 +87,9 @@ public class ClientHandler extends Thread
                             notifyQuit("#closeClient");
                             break;
                         }
-                        else
-                        {
+                        else if(inputLine.equals("publish") || inputLine.equals("subscribe")){
+                            out.println("Errore: il topic non è specificato. Riprova");
+                        }else{
                             out.println("Prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
                         }
                     }
