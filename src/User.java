@@ -11,7 +11,6 @@ public abstract class User
     protected Socket clientSocket;
     //il writer e il reader per inviare messaggi al client
     protected PrintWriter out;
-    protected BufferedReader in;
     protected Topic currentTopic;
     //la lista di messaggi in ispezione che verranno analizzati quando il topic non sarà più in ispezione
     protected LinkedList<String> inspectMessages;
@@ -38,11 +37,8 @@ public abstract class User
         return this.clientSocket;
     }
 
-    // metodo da sovrascrivere nelle classi derivate per gestire i comandi
-    public void handleCommand(String inputLine)
-    {
-        //metodo che viene sovrascritto nelle classi derivate "Publisher" e "Subscriber"
-    };
+    //metodo che viene sovrascritto nelle classi derivate "Publisher" e "Subscriber"
+    public void handleCommand(String inputLine) {};
 
     //metodo che inserisce un messaggio in coda per l'elaborazione perchè il server è in ispezione
     protected void addInspectMessage(String m)
@@ -70,7 +66,5 @@ public abstract class User
     {
         //inizializza il writer per l'output del client
         out = new PrintWriter(clientSocket.getOutputStream(), true);
-        //inizializza il reader per l'input del client
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 }
