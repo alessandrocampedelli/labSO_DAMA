@@ -228,9 +228,12 @@ public class ServerHandler extends Thread
                     String messageIdStr = userInput.split(" ", 2)[1].trim();
                     int messageId;
                     //controllo che l'id inserito sia un intero
-                    try{
+                    try
+                    {
                         messageId = Integer.parseInt(messageIdStr);
-                    }catch (NumberFormatException e){
+                    }
+                    catch (NumberFormatException e)
+                    {
                         System.err.println("L'id del messaggio deve essere un numero intero");
                         continue;
                     }
@@ -302,7 +305,8 @@ public class ServerHandler extends Thread
         {
             for (ClientHandler client : Server.listClient)
             {
-                if(client.getClient() != null && client.getClient().getTopic() == topic) {
+                if(client.getClient() != null && client.getClient().getTopic() == topic)
+                {
                     //elenco dei messaggi di ispezione per ogni client
                     client.getClient().processInspectMessages();
                 }

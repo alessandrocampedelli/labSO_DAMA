@@ -2,27 +2,24 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client {
-    private static final String serverIp = "127.0.0.1";
-    private static final int serverPort = 9000;
+public class Client
+{
     public static void main(String[] args)
     {
-        /*
         //l'utente avvia il client indicando l'indirizzo IP e il numero di porta del Server
         if (args.length != 2)
         {
             System.out.println("ERRORE: devi utilizzare la seguente sintassi: --> java Client <indirizzo_server> <porta_server>");
             return;
         }
-        */
+
         Flag flag = new Flag(true);
         //i dati appena inseriti dall'utente
-        try {
-            /*
+        try
+        {
             String serverIp = args[0];
             int serverPort = Integer.parseInt(args[1]);
-            */
-            // Apertura della connessione con il server e gestione delle risorse con try-with-resources
+            //apertura della connessione con il server e gestione delle risorse con try-with-resources
             try (Socket socket = new Socket(serverIp, serverPort);
                  PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                  BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -35,32 +32,38 @@ public class Client {
                 Thread listenerThread = startListenerThread(socket, in, flag);
                 String userInput;
 
-                // Ciclo per leggere l'input dell'utente da tastiera e inviarlo al server
-                while ((userInput = stdIn.nextLine()) != null) {
+                //ciclo per leggere l'input dell'utente da tastiera e inviarlo al server
+                while ((userInput = stdIn.nextLine()) != null)
+                {
                     userInput = userInput.trim().toLowerCase();
                     out.println(userInput);
-                    if (userInput.equals("quit")) {
-
+                    if (userInput.equals("quit"))
+                    {
                         listenerThread.join();
-
-                        if (!flag.getFlag()) {
+                        if (!flag.getFlag())
+                        {
                             break;
                         }
-                        if (!listenerThread.isAlive()) {
+                        if (!listenerThread.isAlive())
+                        {
                             listenerThread = startListenerThread(socket, in, flag);
                         }
                     }
                 }
             }
-
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e)
+        {
             System.out.println("ERRORE: numero di porta non corretto");
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             System.out.println("Impossibile connettersi al server " + args[0] + ":" + args[1]);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e)
+        {
             throw new RuntimeException(e);
         }
-
     }
 
     public static Thread startListenerThread(Socket socket, BufferedReader in, Flag flag)
@@ -130,21 +133,29 @@ public class Client {
                 }
             }
         });
-        //avvio del thread
+        //avvio del Thread
         listenerThread.start();
         return listenerThread;
     }
-    private static class Flag{
+
+    //la classe "Flag" per gestire i vari casi di chiusura del programma
+    private static class Flag
+    {
         private volatile Boolean flag;
 
-        public Flag(Boolean flag){
+        //il metodo costruttore della classe "Flag"
+        public Flag(Boolean flag)
+        {
             this.flag = flag;
         }
 
-        public Boolean getFlag(){
+        public Boolean getFlag()
+        {
             return this.flag;
         }
-        public void setFlag(Boolean val){
+
+        public void setFlag(Boolean val)
+        {
             this.flag = val;
         }
     }

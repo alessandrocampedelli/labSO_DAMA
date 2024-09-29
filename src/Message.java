@@ -12,6 +12,7 @@ public class Message
     //la data e l'ora di creazione del messaggio
     private final String dataOra;
     public static final Object lockcounter = new Object();
+
     //metodo costruttore per inizializzare un nuovo messaggio
     public Message(String text)
     {

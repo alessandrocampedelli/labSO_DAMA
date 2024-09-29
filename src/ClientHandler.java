@@ -1,5 +1,4 @@
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.NoSuchElementException;
@@ -14,13 +13,11 @@ public class ClientHandler extends Thread
     private volatile boolean running = true;
     private Scanner in;
     private PrintWriter out;
-
     //metodo costruttore che permette l'inizializzazione della socket e della lista dei client connessi
     public ClientHandler(Socket socket)
     {
         this.clientSocket = socket;
     }
-
     @Override
     public void run()
     {
@@ -85,9 +82,12 @@ public class ClientHandler extends Thread
                             notifyQuit("#closeClient");
                             break;
                         }
-                        else if(inputLine.equals("publish") || inputLine.equals("subscribe")){
+                        else if(inputLine.equals("publish") || inputLine.equals("subscribe"))
+                        {
                             out.println("ERRORE: il topic non è specificato. Riprova");
-                        }else{
+                        }
+                        else
+                        {
                             out.println("ERRORE: prima di compiere operazioni devi prima registrarti come publisher o subscriber.");
                         }
                     }
