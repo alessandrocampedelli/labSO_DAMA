@@ -11,12 +11,14 @@ public class Message
     private final String text;
     //la data e l'ora di creazione del messaggio
     private final String dataOra;
-    public static final Object lockcounter = new Object();
+    //public static final Object lockcounter = new Object();
 
     //metodo costruttore per inizializzare un nuovo messaggio
     public Message(String text)
     {
-        this.id = ++counter;
+        synchronized (counter) {
+            this.id = ++counter;
+        }
         this.text = text.trim();
         LocalDateTime now = LocalDateTime.now();
         //formattazione della data e ora nel formato "dd/MM/yyyy HH:mm:ss"
