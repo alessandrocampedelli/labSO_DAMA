@@ -58,7 +58,6 @@ public class Server
                         //stampa un messaggio di errore se qualcosa va storto nell'accettare la connessione
                         System.err.println("Errore durante l'accettazione della connessione: " + e.getMessage());
                     }
-                    break;
                 }
             }
 

@@ -81,9 +81,7 @@ public class Client
                     if (response.equals("#closeServer"))
                     {
                         System.out.println("Il server si è disconnesso. Riprova a connetterti successivamente...");
-                        flag.setFlag(false);
                         System.exit(0);
-                        break;
                     }
                     //caso in cui il client avvisa che si sta disconnettendo
                     else if (response.equals("#closeClient"))
