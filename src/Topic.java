@@ -36,7 +36,7 @@ public class Topic
     }
 
     //metodo che aggiunge un messaggio al topic e notifica tutti i subscriber
-    public synchronized void addMessage(Message message)
+    public void addMessage(Message message)
     {
         synchronized (messages)
         {
