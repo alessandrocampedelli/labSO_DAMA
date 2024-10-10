@@ -79,8 +79,10 @@ public class Topic
     }
 
     //metodo che rimuove un messaggio dal topic dato il suo ID
-    public synchronized void deleteMessage(int id)
+    public void deleteMessage(int id)
     {
-        messages.removeIf(message -> message.getId() == id);
+        synchronized (messages) {
+            messages.removeIf(message -> message.getId() == id);
+        }
     }
 }
