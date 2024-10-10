@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.SocketException;
 import java.util.Scanner;
 
 public class ServerHandler extends Thread
@@ -88,14 +87,15 @@ public class ServerHandler extends Thread
     }
 
     //metodo per notificare con un messaggio i client iscritti ad un topic specifico
-    private void notifyUsers(String message, Topic topic) throws InterruptedException {
+    private void notifyUsers(String message, Topic topic)
+    {
         //sincronizzo l'accesso alla lista dei client
         synchronized (Server.listClient)
         {
             //ciclo per tutti i client connessi al server
             for (ClientHandler client : Server.listClient)
             {
-                if(!client.getSocket().isClosed()) {
+                if(client.getClient() == null) {
                     //mi chiedo se il messaggio è uguale al comando di escape "#closeServer"
                     if (message.equals("#closeServer")) {
                         try {
@@ -104,24 +104,29 @@ public class ServerHandler extends Thread
                             //invio il messaggio
                             out.println(message);
 
-                        } catch (IOException e) {
+                        }
+                        catch (IOException e)
+                        {
                             System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
                         }
                     }
                     continue;
                 }
                 //notifica solo i client iscritti al topic specificato (se esiste)
-                if (topic == null || client.getClient().getTopic().equals(topic)) {
-                    try {
+                if (topic == null || client.getClient().getTopic().equals(topic))
+                {
+                    try
+                    {
                         //crea un PrintWriter per inviare il messaggio al client specifico
                         PrintWriter out = new PrintWriter(client.getClient().getClientSocket().getOutputStream(), true);
                         //invio il messaggio
                         out.println(message);
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e)
+                    {
                         System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
                     }
                 }
-
             }
         }
     }
