@@ -177,13 +177,12 @@ public class ClientHandler extends Thread
         try
         {
             //rimuovo il client connesso alla lista di client
-            synchronized (Server.listClient)
-            {
+            synchronized (Server.listClient) {
                 Server.listClient.removeIf(ClientHandler -> ClientHandler.getSocket().equals(clientSocket));
-            }
-            if (!clientSocket.isClosed())
-            {
-                clientSocket.close();
+
+                if (!clientSocket.isClosed()) {
+                    clientSocket.close();
+                }
             }
         }
         catch (IOException e)
