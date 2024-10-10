@@ -138,11 +138,6 @@ public class ClientHandler extends Thread
                     }
                 }
             }
-            else
-            {
-                //non stampo sul server il fatto che il client si sia collegato, in quanto non si è registrato
-                clientSocket.close();
-            }
 
         }
         catch (SocketException e)
@@ -166,8 +161,10 @@ public class ClientHandler extends Thread
         {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             out.println(m);
-        }
-        catch (IOException e)
+        } catch (SocketException e){
+            System.err.println("Errore durante l'invio della notifica al client: la socket è già stata chiusa");
+
+        } catch (IOException e)
         {
             System.err.println("Errore durante l'invio della notifica al client: " + e.getMessage());
         }
