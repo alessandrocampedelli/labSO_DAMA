@@ -10,7 +10,6 @@ public class Server
     public static final List<Topic> topics = new ArrayList<>();
     public static final List<ClientHandler> listClient = new ArrayList<>();
     public static final Object lock = new Object();
-    public static final Object lockSocket = new Object();
 
     public static void main(String[] args)
     {
